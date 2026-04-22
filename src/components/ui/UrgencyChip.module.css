@@ -1,0 +1,31 @@
+.urg {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.bar {
+  display: flex;
+  gap: 2px;
+}
+
+.bar span {
+  width: 4px;
+  height: 12px;
+  background: #2b3246;
+  border-radius: 1px;
+}
+
+.high .bar span:nth-child(-n+3) { background: var(--green); height: 12px; }
+
+.mid .bar span { height: 6px; }
+.mid .bar span:nth-child(-n+2) { background: #facc15; height: 12px; }
+
+.low .bar span { height: 6px; }
+.low .bar span:nth-child(-n+1) { background: #6b7389; height: 12px; }
+
+.high { color: var(--green); }
+.mid { color: #facc15; }
+.low { color: var(--text-mute); }

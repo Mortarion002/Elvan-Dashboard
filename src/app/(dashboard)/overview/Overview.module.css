@@ -1,0 +1,174 @@
+.content {
+  padding: 28px 32px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pageHead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.pageTitle {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.pageSub {
+  color: var(--text-dim);
+  font-size: 14px;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.liveDot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--green);
+  font-weight: 600;
+  background: var(--green-soft);
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(34,197,94,.25);
+}
+
+.liveDot::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 3px rgba(34,197,94,.25);
+}
+
+.actions { display: flex; gap: 10px; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 16px; border-radius: 10px;
+  font-weight: 600; font-size: 13px; cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg-elev); color: var(--text);
+}
+
+.primary {
+  background: var(--green); color: #04140b; border-color: transparent;
+  box-shadow: 0 8px 24px -8px rgba(34,197,94,.5);
+}
+
+/* STATS STRIP */
+.statsStrip {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+.stripCard {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 18px;
+  display: flex; align-items: center; gap: 14px;
+}
+.stripIcon {
+  width: 36px; height: 36px; border-radius: 9px; flex: 0 0 36px;
+  display: grid; place-items: center;
+}
+.num { font-size: 22px; font-weight: 800; letter-spacing: -0.025em; line-height: 1; }
+.lbl { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+
+/* MAIN GRID */
+.grid { display: grid; grid-template-columns: 320px 1fr; gap: 16px; align-items: flex-start; }
+.col { display: flex; flex-direction: column; gap: 16px; }
+.col2 { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+.card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px 22px;
+}
+.cardHead { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+.cardTitle { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; margin: 0; }
+.cardSub { font-size: 12.5px; color: var(--text-dim); margin-top: 2px; }
+
+/* Bar Chart */
+.chartCard { display: flex; flex-direction: column; min-height: 280px; }
+.barChart {
+  flex: 1; display: flex; align-items: flex-end; justify-content: space-between;
+  padding-top: 20px; gap: 8px;
+}
+.bCol {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  height: 100%; gap: 10px;
+}
+.bVal {
+  width: 100%; max-width: 36px; background: #2d3446; border-radius: 6px 6px 0 0;
+  transition: height .6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bVal:hover { background: #3f485e; }
+.bLbl { font-size: 11.5px; color: var(--text-mute); font-weight: 600; }
+
+/* Donut Chart */
+.donutWrap { display: flex; align-items: center; gap: 32px; flex: 1; padding: 0 10px; }
+.donut { position: relative; width: 140px; height: 140px; flex: 0 0 140px; }
+.circularChart { display: block; margin: 0 auto; max-width: 100%; max-height: 250px; }
+.circleBg { fill: none; stroke: var(--border); stroke-width: 3.5; }
+.circle { fill: none; stroke-width: 3.5; stroke-linecap: round; }
+.donutCenter { position: absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.dNum { font-size: 24px; font-weight: 800; line-height: 1; }
+.dLbl { font-size: 11px; color: var(--text-mute); font-weight: 600; text-transform: uppercase; margin-top: 4px; }
+.donutLegend { display: flex; flex-direction: column; gap: 14px; flex: 1; }
+.legItem { display: flex; align-items: center; font-size: 13px; }
+.legDot { width: 10px; height: 10px; border-radius: 50%; margin-right: 10px; }
+.legLbl { color: var(--text-dim); }
+.legVal { margin-left: auto; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+
+/* Tables & Lists */
+.smallBtn { padding: 6px 10px; font-size: 11.5px; border-radius: 7px; background: var(--bg-elev-2); }
+.tableCard { padding: 0; overflow: hidden; }
+.tableCard .cardHead { padding: 20px 22px 0; }
+.tableWrap { padding: 0 22px; }
+table { width: 100%; border-collapse: collapse; }
+th {
+  text-align: left; font-size: 11px; color: var(--text-mute);
+  font-weight: 600; text-transform: uppercase; letter-spacing: .08em;
+  padding: 10px 10px; border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 13px 10px;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: 13px;
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,.015); }
+
+.tTitle { font-weight: 600; color: var(--text); max-width: 260px; overflow:hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sub { display: block; color: var(--text-mute); font-size: 11.5px; font-weight: 400; margin-top: 2px; }
+
+/* Competitors List */
+.compList { display: flex; flex-direction: column; gap: 8px; margin-top: 20px; }
+.cRow {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px; border-radius: 10px;
+  background: var(--bg-elev-2); border: 1px solid var(--border);
+}
+.cLogo {
+  width: 24px; height: 24px; border-radius: 6px;
+  display: grid; place-items: center;
+  font-size: 11px; font-weight: 700;
+}
+.cName { font-weight: 600; font-size: 13px; width: 80px; flex-shrink: 0; }
+.cVol { font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-dim); width: 36px; text-align: right; }
+.cBarWrap { flex: 1; margin: 0 12px; }
+.cBarBg { height: 6px; background: var(--bg-elev); border-radius: 3px; overflow: hidden; }
+.cBarFill { height: 100%; border-radius: 3px; }
+.cTrend { font-size: 11.5px; font-weight: 600; width: 44px; text-align: right; font-variant-numeric: tabular-nums; }
+.up { color: var(--green); }
+.down { color: var(--text-mute); }
