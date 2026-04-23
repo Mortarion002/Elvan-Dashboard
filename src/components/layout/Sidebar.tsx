@@ -1,25 +1,28 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import type { CoverageSummary, NavigationCounts, StatusSummary } from "@/lib/dashboardData";
+import type { NavigationCounts } from "@/lib/dashboardData";
 import styles from "./Sidebar.module.css";
 
 type SidebarProps = {
   navigationCounts: NavigationCounts;
-  coverage: CoverageSummary;
-  statusSummary: StatusSummary;
   unhealthyChannels: number;
 };
 
-export function Sidebar({
-  navigationCounts,
-  coverage,
-  statusSummary,
-  unhealthyChannels,
-}: SidebarProps) {
+export function Sidebar({ navigationCounts, unhealthyChannels }: SidebarProps) {
   const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.dataset.sidebar = collapsed ? "collapsed" : "expanded";
+
+    return () => {
+      delete document.documentElement.dataset.sidebar;
+    };
+  }, [collapsed]);
 
   const mainNav = [
     {
@@ -133,15 +136,8 @@ export function Sidebar({
     },
   ];
 
-  const footerClass =
-    statusSummary.mode === "live"
-      ? styles.live
-      : statusSummary.mode === "partial"
-        ? styles.partial
-        : styles.fallback;
-
   return (
-    <aside className={styles.sidebar}>
+    <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ""}`}>
       <div className={styles.logo}>
         <div className={styles.logoMark}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -160,6 +156,18 @@ export function Sidebar({
         </div>
       </div>
 
+      <button
+        type="button"
+        className={styles.toggleButton}
+        onClick={() => setCollapsed((current) => !current)}
+        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+          <path d="M15 6l-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+
       <div className={styles.navLabel}>Signal Views</div>
 
       {mainNav.map((item) => (
@@ -167,6 +175,8 @@ export function Sidebar({
           key={item.href}
           href={item.href}
           className={`${styles.navItem} ${pathname === item.href ? styles.active : ""}`}
+          aria-label={item.label}
+          title={collapsed ? item.label : undefined}
         >
           {item.icon}
           <span className={styles.navText}>{item.label}</span>
@@ -181,38 +191,14 @@ export function Sidebar({
           key={item.href}
           href={item.href}
           className={`${styles.navItem} ${pathname === item.href ? styles.active : ""}`}
+          aria-label={item.label}
+          title={collapsed ? item.label : undefined}
         >
           {item.icon}
           <span className={styles.navText}>{item.label}</span>
           {item.badge ? <span className={styles.badge}>{item.badge}</span> : null}
         </Link>
       ))}
-
-      <div className={`${styles.sidebarFooter} ${footerClass}`}>
-        <div className={styles.footerEyebrow}>{statusSummary.label}</div>
-        <div className={styles.footerTitle}>Parallel channel coverage</div>
-        <div className={styles.footerSub}>
-          Read-only aggregation across X_Post, n8n, Neon, and Notion. Operational stores stay untouched.
-        </div>
-        <div className={styles.footerStats}>
-          <div className={styles.footerStat}>
-            <span>Unified</span>
-            <strong>{coverage.totalSignals}</strong>
-          </div>
-          <div className={styles.footerStat}>
-            <span>Mirrored</span>
-            <strong>{coverage.mirroredSignals}</strong>
-          </div>
-          <div className={styles.footerStat}>
-            <span>Neon only</span>
-            <strong>{coverage.neonOnlySignals}</strong>
-          </div>
-          <div className={styles.footerStat}>
-            <span>Notion only</span>
-            <strong>{coverage.notionOnlySignals}</strong>
-          </div>
-        </div>
-      </div>
     </aside>
   );
 }

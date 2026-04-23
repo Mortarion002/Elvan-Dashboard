@@ -1,4 +1,5 @@
 .app {
+  --sidebar-width: 272px;
   min-height: 100vh;
   width: 100%;
   background:
@@ -6,7 +7,8 @@
     radial-gradient(circle at top right, rgba(251, 113, 133, 0.06), transparent 32%),
     linear-gradient(180deg, #0d1017 0%, #0a0c12 100%);
   display: grid;
-  grid-template-columns: 272px minmax(0, 1fr);
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  transition: grid-template-columns 0.24s ease;
 }
 
 .main {
@@ -16,9 +18,13 @@
   backdrop-filter: blur(16px);
 }
 
+:global(html[data-sidebar="collapsed"]) .app {
+  --sidebar-width: 96px;
+}
+
 @media (max-width: 1120px) {
   .app {
-    grid-template-columns: 88px minmax(0, 1fr);
+    --sidebar-width: 88px;
   }
 }
 

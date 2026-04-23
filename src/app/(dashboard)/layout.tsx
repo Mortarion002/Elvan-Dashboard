@@ -16,8 +16,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <div className={styles.app}>
       <Sidebar
         navigationCounts={data.navigationCounts}
-        coverage={data.coverage}
-        statusSummary={data.statusSummary}
         unhealthyChannels={unhealthyChannels}
       />
       <div className={styles.main}>

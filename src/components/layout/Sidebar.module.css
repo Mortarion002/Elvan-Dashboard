@@ -11,13 +11,20 @@
   top: 0;
   height: 100vh;
   backdrop-filter: blur(16px);
+  transition: padding 0.22s ease;
+}
+
+.collapsed {
+  padding-inline: 14px;
 }
 
 .logo {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 4px 12px 24px;
+  padding: 4px 48px 24px 12px;
+  min-width: 0;
+  transition: padding 0.22s ease, gap 0.22s ease;
 }
 
 .logoMark {
@@ -29,6 +36,7 @@
   place-items: center;
   box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.2), 0 12px 28px -12px rgba(96, 165, 250, 0.7);
   position: relative;
+  flex: 0 0 38px;
 }
 
 .logoMark::after {
@@ -48,10 +56,56 @@
   font-weight: 800;
   font-size: 20px;
   letter-spacing: -0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 160px;
+  transition: opacity 0.16s ease, max-width 0.22s ease, transform 0.22s ease;
 }
 
 .dot {
   color: #60a5fa;
+}
+
+.toggleButton {
+  position: absolute;
+  top: 28px;
+  right: 18px;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(15, 19, 28, 0.88);
+  color: var(--text-dim);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    color 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease,
+    right 0.22s ease;
+}
+
+.toggleButton:hover {
+  color: var(--text);
+  background: rgba(21, 24, 33, 0.98);
+  border-color: rgba(96, 165, 250, 0.2);
+}
+
+.toggleButton svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.22s ease;
+}
+
+.collapsed .toggleButton {
+  right: 10px;
+}
+
+.collapsed .toggleButton svg {
+  transform: rotate(180deg);
 }
 
 .navLabel {
@@ -61,6 +115,14 @@
   letter-spacing: 0.14em;
   color: var(--text-mute);
   padding: 18px 12px 8px;
+  overflow: hidden;
+  max-height: 40px;
+  white-space: nowrap;
+  transition:
+    opacity 0.16s ease,
+    max-height 0.22s ease,
+    padding 0.22s ease,
+    transform 0.22s ease;
 }
 
 .navItem {
@@ -68,13 +130,19 @@
   align-items: center;
   gap: 12px;
   padding: 11px 12px;
+  min-height: 44px;
   border-radius: 12px;
   color: var(--text-dim);
   font-weight: 500;
   font-size: 14px;
   cursor: pointer;
   position: relative;
-  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease,
+    padding 0.22s ease,
+    gap 0.22s ease;
 }
 
 .navItem:hover {
@@ -91,6 +159,10 @@
 
 .navText {
   min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 160px;
+  transition: opacity 0.16s ease, max-width 0.22s ease, transform 0.22s ease;
 }
 
 .active {
@@ -122,110 +194,39 @@
   border-radius: 999px;
   border: 1px solid rgba(96, 165, 250, 0.2);
   font-variant-numeric: tabular-nums;
+  transition: transform 0.22s ease, right 0.22s ease, top 0.22s ease;
 }
 
-.sidebarFooter {
-  margin-top: auto;
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  background: linear-gradient(160deg, rgba(17, 24, 39, 0.92), rgba(10, 12, 18, 0.94) 90%);
-  border-radius: 20px;
-  padding: 18px;
-  position: relative;
-  overflow: hidden;
+.collapsed .logo {
+  padding-right: 40px;
 }
 
-.sidebarFooter::after {
-  content: "";
+.collapsed .logoText,
+.collapsed .navText {
+  opacity: 0;
+  max-width: 0;
+  transform: translateX(-6px);
+}
+
+.collapsed .navLabel {
+  opacity: 0;
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  transform: translateY(-4px);
+}
+
+.collapsed .navItem {
+  justify-content: center;
+  padding-inline: 0;
+  gap: 0;
+}
+
+.collapsed .badge {
   position: absolute;
-  right: -36px;
-  top: -36px;
-  width: 120px;
-  height: 120px;
-  background: radial-gradient(circle, rgba(96, 165, 250, 0.24), transparent 70%);
-}
-
-.live::before,
-.partial::before,
-.fallback::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-}
-
-.live::before {
-  box-shadow: inset 0 0 0 1px rgba(52, 211, 153, 0.16);
-}
-
-.partial::before {
-  box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.16);
-}
-
-.fallback::before {
-  box-shadow: inset 0 0 0 1px rgba(248, 113, 113, 0.14);
-}
-
-.footerEyebrow {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-mute);
-}
-
-.footerTitle {
-  position: relative;
-  z-index: 1;
-  font-weight: 700;
-  font-size: 15px;
-  margin-top: 10px;
-}
-
-.footerSub {
-  position: relative;
-  z-index: 1;
-  font-size: 12.5px;
-  color: var(--text-dim);
-  line-height: 1.55;
-  margin-top: 6px;
-}
-
-.footerStats {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 16px;
-}
-
-.footerStat {
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(148, 163, 184, 0.12);
-}
-
-.footerStat span {
-  display: block;
-  font-size: 11px;
-  color: var(--text-mute);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.footerStat strong {
-  display: block;
-  font-size: 20px;
-  font-weight: 800;
-  margin-top: 6px;
-  font-variant-numeric: tabular-nums;
+  top: 6px;
+  right: 6px;
+  margin-left: 0;
 }
 
 @media (max-width: 1120px) {
@@ -233,16 +234,21 @@
     padding-inline: 14px;
   }
 
+  .toggleButton,
   .logoText,
   .navText,
-  .navLabel,
-  .sidebarFooter {
+  .navLabel {
     display: none;
+  }
+
+  .logo {
+    padding-right: 12px;
   }
 
   .navItem {
     justify-content: center;
     padding-inline: 0;
+    gap: 0;
   }
 
   .badge {
@@ -263,23 +269,36 @@
     display: block;
   }
 
+  .logo {
+    padding-bottom: 16px;
+  }
+
   .logoText,
   .navText {
     display: inline;
+    opacity: 1;
+    max-width: none;
+    transform: none;
   }
 
-  .navLabel,
-  .sidebarFooter {
+  .navLabel {
     display: block;
-  }
-
-  .logo {
-    padding-bottom: 16px;
+    max-height: 40px;
+    opacity: 1;
+    padding-top: 18px;
+    padding-bottom: 8px;
+    transform: none;
   }
 
   .navItem {
     justify-content: flex-start;
     padding-inline: 12px;
+    gap: 12px;
+  }
+
+  .badge {
+    position: static;
+    margin-left: auto;
   }
 
   .active::before {
