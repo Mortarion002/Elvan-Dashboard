@@ -3,6 +3,9 @@ import { Topbar } from "@/components/layout/Topbar";
 import { loadDashboardData } from "@/lib/dashboardData";
 import styles from "./layout.module.css";
 
+export const runtime = "nodejs";
+export const maxDuration = 30;
+
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const data = await loadDashboardData();
   const unhealthyChannels = data.channelStatuses.filter(

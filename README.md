@@ -1,59 +1,35 @@
 # Elvan Signal Bot Dashboard
 
-Welcome to the Elvan Signal Bot Dashboard! This project is a Next.js application designed to visualize and manage high-intent leads and social signals captured by the Elvan AI systems.
+Next.js dashboard for viewing Elvan signal data across X_Post, Reddit, Hacker News, Product Hunt, Neon, and Notion.
 
-The dashboard now supports live server-side aggregation:
+The dashboard is a read-only aggregation layer. It does not replace or modify the operational stores used by `X_Post` or the n8n workflows.
 
-- Neon for X/Post findings mirrored by the Python bot
-- Neon for HN / Product Hunt signals dual-written by the n8n collector workflow
-- Notion for the existing n8n workflow datastore
+## What It Reads
 
-Mock data still remains as a fallback so the UI can render even when live credentials are not configured.
+- Neon for mirrored X_Post findings
+- Neon for mirrored HN and Product Hunt signals from n8n
+- Notion for the existing n8n primary signals database
+- Notion weekly reports when configured
 
-## 🚀 Features
+If live credentials are missing, the UI falls back to mock data so the app still renders.
 
-- **Four Main Dashboard Views:**
-  - `/overview`: A high-level summary of live cross-channel metrics, recent signals, and overall bot performance.
-  - `/hot-leads`: A prioritized list of scored leads that are ripe for immediate engagement.
-  - `/signal-feed`: A chronological feed of detected signals across X, Reddit, Hacker News, and Product Hunt.
-  - `/competitor-intelligence`: Aggregated competitor mentions and cross-source signal overlap.
-- **Reusable UI Components:**
-  - `SourcePill`: Clear visual indicators for the origin platform of a lead or signal.
-  - `ScoreBadge`: Color-coded representations of AI-generated lead scores.
-  - `UrgencyChip`: Highlights the time-sensitivity of specific signals.
-  - `IntentTag`: Categorizes the underlying user intent based on the bot's analysis.
-- **Modern Tech Stack:** Built with Next.js (App Router), React 19, TypeScript, and CSS Modules for scoped, maintainable styling.
+## Stack
 
-## 🛠️ Tech Stack
+- Next.js App Router
+- React 19
+- TypeScript
+- CSS Modules
+- `@neondatabase/serverless` for Neon access
 
-- **Framework:** [Next.js](https://nextjs.org/) (App Router)
-- **Library:** [React](https://react.dev/)
-- **Language:** [TypeScript](https://www.typescriptlang.org/)
-- **Styling:** CSS Modules (Vanilla CSS for maximum flexibility and control)
+## Local Development
 
-## 📦 Getting Started
-
-First, install the dependencies:
+Install dependencies:
 
 ```bash
 npm install
 ```
 
-Then, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result. You can start navigating through the dashboard using the sidebar links to explore the different views.
-
-For live data, create `.env.local` with:
+Copy `.env.example` to `.env.local` and fill in:
 
 ```env
 NEON_DATABASE_URL=your_neon_postgres_connection_string
@@ -62,17 +38,51 @@ NOTION_DB_ID=your_primary_signals_database_id
 NOTION_WEEKLY_DB_ID=your_weekly_reports_database_id
 ```
 
-`NEON_DATABASE_URL` powers the shared parallel channel.
-`NOTION_*` powers the existing n8n / Notion channel.
-The dashboard deduplicates overlapping Neon and Notion records so n8n signals do not double-count while both channels stay active.
+Run the app:
 
-## 📁 Project Structure
+```bash
+npm run dev
+```
 
-- `src/app`: Contains the Next.js App Router structure, including the layouts and main pages (`/overview`, `/hot-leads`, etc.).
-- `src/components`: Reusable UI elements (`ui/`) and larger structural components (`layout/` like Topbar and Sidebar).
-- `src/data`: Contains the `mockData.ts` fallback dataset.
-- `src/lib/dashboardData.ts`: Loads live data from Neon and Notion, with mock fallback.
+Open `http://localhost:3000`.
 
-## 🎨 Design Philosophy
+## Vercel Deployment
 
-The application prioritizes a premium, responsive, and dynamic user experience. It utilizes custom CSS modules to implement modern web design practices, ensuring a sleek appearance with subtle micro-animations and robust component isolation.
+This app is ready to run on Vercel as a server-rendered dashboard.
+
+Required Vercel environment variables:
+
+```env
+NEON_DATABASE_URL=your_neon_postgres_connection_string
+NOTION_API_KEY=your_notion_integration_token
+NOTION_DB_ID=your_primary_signals_database_id
+NOTION_WEEKLY_DB_ID=your_weekly_reports_database_id
+```
+
+Recommended deployment flow:
+
+1. Import the GitHub repo in Vercel or run `vercel link` from this folder.
+2. Add the four environment variables in Vercel for `Production`, `Preview`, and `Development`.
+3. Run `vercel --prod` for the first live deployment.
+
+Deployment notes:
+
+- The dashboard stays read-only against Neon and Notion.
+- The dashboard layout is pinned to the Node.js runtime for server-side data access.
+- Notion weekly reports are optional. If that database is empty or missing records, the rest of the dashboard still works.
+
+## Main Areas
+
+- `/overview` for top-level metrics and workflow health
+- `/hot-leads` for high-priority signals
+- `/signal-feed` for the full unified timeline
+- `/competitor-intelligence` for tool and competitor mentions
+- `/alerts` for alert review state
+- `/integrations` for channel and workflow health
+
+## Project Structure
+
+- `src/app` contains App Router pages and layouts
+- `src/components` contains layout and UI components
+- `src/data` contains mock fallback data
+- `src/lib/dashboardData.ts` contains live Neon and Notion aggregation logic
