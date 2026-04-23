@@ -1,84 +1,151 @@
 .topbar {
-  height: 72px;
-  display: flex; align-items: center; gap: 24px;
-  padding: 0 32px;
-  border-bottom: 1px solid var(--border-soft);
-  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px 32px 18px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  background: linear-gradient(180deg, rgba(12, 16, 24, 0.96), rgba(12, 16, 24, 0.76));
+  backdrop-filter: blur(18px);
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 12;
 }
 
-.search {
-  flex: 1; max-width: 520px;
-  display: flex; align-items: center; gap: 10px;
-  background: var(--bg-elev);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 9px 12px;
+.summary {
+  min-width: 0;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--text-mute);
 }
 
-.search input {
-  flex: 1; background: transparent; border: none; outline: none;
-  color: var(--text); font: inherit; font-size: 13.5px;
+.modeDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(148, 163, 184, 0.08);
 }
 
-.search input::placeholder { color: var(--text-mute); }
-
-.kbd {
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 11px; color: var(--text-dim);
-  background: #0f1117;
-  border: 1px solid var(--border);
-  padding: 2px 6px; border-radius: 5px;
+.live {
+  background: #34d399;
 }
 
-.topRight { display: flex; align-items: center; gap: 16px; margin-left: auto; }
-
-.iconBtn {
-  width: 38px; height: 38px; border-radius: 10px;
-  background: var(--bg-elev);
-  border: 1px solid var(--border);
-  display: grid; place-items: center; color: var(--text-dim);
-  position: relative; cursor: pointer;
+.partial {
+  background: #f59e0b;
 }
 
-.iconBtn:hover { color: var(--text); }
-
-.pulse {
-  position: absolute; top: 8px; right: 8px;
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--green);
-  box-shadow: 0 0 0 3px rgba(34,197,94,.2);
+.fallback {
+  background: #f87171;
 }
 
-.user {
-  display: flex; align-items: center; gap: 10px;
-  padding: 4px 12px 4px 4px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--bg-elev);
-  cursor: pointer;
+.title {
+  margin-top: 8px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
 }
 
-.avatar {
-  width: 32px; height: 32px; border-radius: 50%;
-  background: linear-gradient(135deg, #22c55e, #0f5132);
-  display: grid; place-items: center;
-  font-weight: 700; color: #fff; font-size: 12px;
-  border: 1px solid rgba(255,255,255,.08);
-}
-
-.userInfo {
+.meta {
+  margin-top: 6px;
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: var(--text-dim);
+  font-size: 13px;
 }
 
-.userName { font-weight: 600; font-size: 13px; line-height: 1.1; }
-.userEmail { font-size: 11px; color: var(--text-mute); }
+.meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
 
-.userArrow {
+.meta span::before {
+  content: "";
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(148, 163, 184, 0.7);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.statPill {
+  min-width: 108px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.statLabel {
+  display: block;
+  font-size: 11px;
   color: var(--text-mute);
-  margin-right: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.statPill strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 20px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.linkBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 16px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #60a5fa, #34d399);
+  color: #04140b;
+  font-weight: 700;
+  font-size: 13px;
+  box-shadow: 0 16px 28px -18px rgba(96, 165, 250, 0.8);
+}
+
+@media (max-width: 1040px) {
+  .topbar {
+    padding-inline: 24px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .title {
+    font-size: 18px;
+  }
+
+  .meta {
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .statPill {
+    min-width: 92px;
+  }
 }

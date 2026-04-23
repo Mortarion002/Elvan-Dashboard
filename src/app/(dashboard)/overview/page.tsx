@@ -1,187 +1,126 @@
-import styles from "./Overview.module.css";
+import Link from "next/link";
 
+import overviewStyles from "./Overview.module.css";
+import viewStyles from "../views.module.css";
+
+import { loadDashboardData } from "@/lib/dashboardData";
 import { IntentTag } from "@/components/ui/IntentTag";
 import { ScoreBadge } from "@/components/ui/ScoreBadge";
 import { SourcePill } from "@/components/ui/SourcePill";
 import { UrgencyChip } from "@/components/ui/UrgencyChip";
-import { loadDashboardData } from "@/lib/dashboardData";
 
 export const dynamic = "force-dynamic";
 
 export default async function OverviewPage() {
   const data = await loadDashboardData();
-  const { metrics, overviewCompetitors, signals, sourceBreakdown, trendData } = data;
-  const donutSegments = buildDonutSegments(sourceBreakdown);
-  const totalSignals = signals.length || metrics.signalsThisWeek;
+  const donutSegments = buildDonutSegments(data.sourceBreakdown);
+  const totalSignals = data.metrics.totalSignals || data.metrics.signalsThisWeek;
+  const healthyChannels = data.channelStatuses.filter((channel) => channel.status === "healthy");
+  const recentWorkflowRuns = data.workflowRuns.slice(0, 4);
 
   return (
-    <div className={styles.content}>
-      <div className={styles.pageHead}>
+    <div className={viewStyles.content}>
+      <div className={viewStyles.pageHead}>
         <div>
-          <h1 className={styles.pageTitle}>Overview</h1>
-          <div className={styles.pageSub}>
-            Unified dashboard across X/Post, Reddit, Hacker News, and Product Hunt.
-            <span className={styles.liveDot}>Live data</span>
+          <h1 className={viewStyles.pageTitle}>Overview</h1>
+          <div className={viewStyles.pageSub}>
+            Live read-only aggregation across X/Post, Reddit, Hacker News, Product Hunt, Neon, and
+            Notion. The dashboard consumes the parallel channel and does not modify source systems.
           </div>
         </div>
-        <div className={styles.actions}>
-          <button className={`${styles.btn} ${styles.primary}`}>
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-            >
-              <path d="M12 5v14M5 12h14" />
-            </svg>
-            New tracker
-          </button>
+        <div className={viewStyles.actions}>
+          <Link href="/signal-feed" className={viewStyles.btn}>
+            Full signal feed
+          </Link>
+          <Link href="/integrations" className={`${viewStyles.btn} ${viewStyles.primaryBtn}`}>
+            Pipeline health
+          </Link>
         </div>
       </div>
 
-      <div className={styles.statsStrip}>
-        <div className={styles.stripCard}>
-          <div className={styles.stripIcon} style={{ background: "var(--green-soft)" }}>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#22c55e"
-              strokeWidth="2"
-              strokeLinecap="round"
-            >
-              <path d="M2 12h4l2-7 4 14 2-7h8" />
-            </svg>
-          </div>
-          <div>
-            <div className={styles.num}>{metrics.signalsThisWeek}</div>
-            <div className={styles.lbl}>Signals this week</div>
+      {data.statusSummary.warnings.length ? (
+        <div className={viewStyles.warningCard}>
+          <div className={viewStyles.warningTitle}>Operational notes</div>
+          <div className={viewStyles.warningList}>
+            {data.statusSummary.warnings.map((warning) => (
+              <div className={viewStyles.warningItem} key={warning}>
+                {warning}
+              </div>
+            ))}
           </div>
         </div>
-        <div className={styles.stripCard}>
-          <div className={styles.stripIcon} style={{ background: "rgba(239,68,68,.1)" }}>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#fca5a5"
-              strokeWidth="2"
-              strokeLinecap="round"
-            >
-              <path d="M12 2c1 3 3 4 3 7a3 3 0 0 1-6 0c0-1 .5-2 1-3-2 1-4 4-4 7a6 6 0 0 0 12 0c0-4-3-7-6-11Z" />
-            </svg>
-          </div>
-          <div>
-            <div className={styles.num} style={{ color: "#fca5a5" }}>
-              {metrics.hotLeads}
-            </div>
-            <div className={styles.lbl}>Hot leads</div>
+      ) : null}
+
+      <div className={overviewStyles.statsStrip}>
+        <div className={overviewStyles.stripCard}>
+          <div className={overviewStyles.num}>{data.metrics.signalsThisWeek}</div>
+          <div className={overviewStyles.lbl}>Signals this week</div>
+          <div className={overviewStyles.meta}>All unified records captured in the last 7 days.</div>
+        </div>
+        <div className={overviewStyles.stripCard}>
+          <div className={overviewStyles.num}>{data.metrics.hotLeads}</div>
+          <div className={overviewStyles.lbl}>Hot leads</div>
+          <div className={overviewStyles.meta}>
+            High-urgency or high-score records from all connected sources.
           </div>
         </div>
-        <div className={styles.stripCard}>
-          <div className={styles.stripIcon} style={{ background: "rgba(245,158,11,.1)" }}>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#fcd34d"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-              <path d="M22 4L12 14.01l-3-3" />
-            </svg>
-          </div>
-          <div>
-            <div className={styles.num} style={{ color: "#fcd34d" }}>
-              {metrics.suggestedReplies}
-            </div>
-            <div className={styles.lbl}>Suggested replies</div>
+        <div className={overviewStyles.stripCard}>
+          <div className={overviewStyles.num}>{data.metrics.suggestedReplies}</div>
+          <div className={overviewStyles.lbl}>Draft coverage</div>
+          <div className={overviewStyles.meta}>
+            Signals with a saved response suggestion ready for review.
           </div>
         </div>
-        <div className={styles.stripCard}>
-          <div className={styles.stripIcon} style={{ background: "rgba(106,114,132,.1)" }}>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#9aa3b8"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-              <line x1="12" y1="22.08" x2="12" y2="12" />
-            </svg>
-          </div>
-          <div>
-            <div className={styles.num} style={{ color: "#9aa3b8" }}>
-              {metrics.activeSources}
-            </div>
-            <div className={styles.lbl}>Active sources</div>
+        <div className={overviewStyles.stripCard}>
+          <div className={overviewStyles.num}>{data.metrics.pendingAlerts}</div>
+          <div className={overviewStyles.lbl}>Pending alerts</div>
+          <div className={overviewStyles.meta}>
+            Hot signals still waiting for alert review or operator follow-up.
           </div>
         </div>
       </div>
 
-      <div className={styles.grid}>
-        <div className={styles.col}>
-          <div className={`${styles.card} ${styles.chartCard}`}>
-            <div className={styles.cardHead}>
+      <div className={overviewStyles.grid}>
+        <div className={overviewStyles.column}>
+          <div className={overviewStyles.card}>
+            <div className={overviewStyles.cardHead}>
               <div>
-                <h3 className={styles.cardTitle}>Trend (7d)</h3>
-                <div className={styles.cardSub}>Cross-channel signal volume</div>
+                <h3 className={overviewStyles.cardTitle}>Trend (7d)</h3>
+                <div className={overviewStyles.cardSub}>Cross-channel signal volume</div>
               </div>
             </div>
-            <div className={styles.barChart}>
-              {trendData.map((datum) => (
-                <div className={styles.bCol} key={datum.day}>
+            <div className={overviewStyles.barChart}>
+              {data.trendData.map((datum) => (
+                <div className={overviewStyles.barColumn} key={datum.day}>
                   <div
-                    className={styles.bVal}
-                    style={{
-                      height: datum.height,
-                      ...(datum.active
-                        ? {
-                            background: "var(--green)",
-                            boxShadow: "0 0 16px rgba(34,197,94,.4)",
-                          }
-                        : {}),
-                    }}
+                    className={`${overviewStyles.barValue} ${datum.active ? overviewStyles.activeBar : ""}`}
+                    style={{ height: datum.height }}
                   />
-                  <div className={styles.bLbl} style={datum.active ? { color: "var(--text)" } : {}}>
-                    {datum.day}
-                  </div>
+                  <div className={overviewStyles.barCount}>{datum.count}</div>
+                  <div className={overviewStyles.barLabel}>{datum.day}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className={`${styles.card} ${styles.chartCard}`}>
-            <div className={styles.cardHead}>
+          <div className={overviewStyles.card}>
+            <div className={overviewStyles.cardHead}>
               <div>
-                <h3 className={styles.cardTitle}>Top Sources</h3>
-                <div className={styles.cardSub}>Distribution by volume</div>
+                <h3 className={overviewStyles.cardTitle}>Source mix</h3>
+                <div className={overviewStyles.cardSub}>Distribution of unified records</div>
               </div>
             </div>
-            <div className={styles.donutWrap}>
-              <div className={styles.donut}>
-                <svg viewBox="0 0 36 36" className={styles.circularChart}>
+            <div className={overviewStyles.donutWrap}>
+              <div className={overviewStyles.donut}>
+                <svg viewBox="0 0 36 36" className={overviewStyles.circularChart}>
                   <path
-                    className={styles.circleBg}
+                    className={overviewStyles.circleBg}
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                   />
                   {donutSegments.map((segment) => (
                     <path
                       key={segment.label}
-                      className={styles.circle}
+                      className={overviewStyles.circle}
                       stroke={segment.color}
                       strokeDasharray={`${segment.pct}, 100`}
                       strokeDashoffset={segment.offset}
@@ -189,53 +128,103 @@ export default async function OverviewPage() {
                     />
                   ))}
                 </svg>
-                <div className={styles.donutCenter}>
-                  <div className={styles.dNum}>{totalSignals}</div>
-                  <div className={styles.dLbl}>Live items</div>
+                <div className={overviewStyles.donutCenter}>
+                  <div className={overviewStyles.donutValue}>{totalSignals}</div>
+                  <div className={overviewStyles.donutLabel}>Unified records</div>
                 </div>
               </div>
-              <div className={styles.donutLegend}>
-                {sourceBreakdown.map((entry) => (
-                  <div className={styles.legItem} key={entry.label}>
-                    <div className={styles.legDot} style={{ background: entry.color }}></div>
-                    <span className={styles.legLbl}>{entry.label}</span>
-                    <span className={styles.legVal}>{entry.pct}%</span>
+              <div className={overviewStyles.legend}>
+                {data.sourceBreakdown.map((entry) => (
+                  <div className={overviewStyles.legendItem} key={entry.label}>
+                    <div className={overviewStyles.legendLeft}>
+                      <div className={overviewStyles.legendDot} style={{ background: entry.color }} />
+                      <span>{entry.label}</span>
+                    </div>
+                    <div className={overviewStyles.legendRight}>
+                      <span>{entry.count}</span>
+                      <strong>{entry.pct}%</strong>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
           </div>
+
+          <div className={overviewStyles.card}>
+            <div className={overviewStyles.cardHead}>
+              <div>
+                <h3 className={overviewStyles.cardTitle}>Channel coverage</h3>
+                <div className={overviewStyles.cardSub}>
+                  How the dashboard is merging the parallel channel today.
+                </div>
+              </div>
+            </div>
+            <div className={overviewStyles.coverageGrid}>
+              <div className={overviewStyles.coverageItem}>
+                <span>Mirrored in Neon + Notion</span>
+                <strong>{data.coverage.mirroredSignals}</strong>
+              </div>
+              <div className={overviewStyles.coverageItem}>
+                <span>Neon only</span>
+                <strong>{data.coverage.neonOnlySignals}</strong>
+              </div>
+              <div className={overviewStyles.coverageItem}>
+                <span>Notion only</span>
+                <strong>{data.coverage.notionOnlySignals}</strong>
+              </div>
+              <div className={overviewStyles.coverageItem}>
+                <span>Workflow runs</span>
+                <strong>{data.coverage.workflowRuns}</strong>
+              </div>
+            </div>
+            <div className={overviewStyles.noteList}>
+              <div className={overviewStyles.noteItem}>
+                {healthyChannels.length} channels are currently healthy and readable.
+              </div>
+              <div className={overviewStyles.noteItem}>
+                Last signal {data.statusSummary.lastSignalLabel}.
+              </div>
+              <div className={overviewStyles.noteItem}>
+                Last workflow {data.statusSummary.lastWorkflowLabel}.
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className={styles.col2}>
-          <div className={`${styles.card} ${styles.tableCard}`}>
-            <div className={styles.cardHead}>
+        <div className={overviewStyles.mainColumn}>
+          <div className={overviewStyles.card}>
+            <div className={overviewStyles.cardHead}>
               <div>
-                <h3 className={styles.cardTitle}>Latest Signals</h3>
-                <div className={styles.cardSub}>Combined from Neon and Notion</div>
+                <h3 className={overviewStyles.cardTitle}>Latest signals</h3>
+                <div className={overviewStyles.cardSub}>
+                  Recently captured and deduplicated records from the unified feed.
+                </div>
               </div>
-              <button className={`${styles.btn} ${styles.smallBtn}`}>View all →</button>
+              <Link href="/signal-feed" className={overviewStyles.smallLink}>
+                View all
+              </Link>
             </div>
-            <div className={styles.tableWrap}>
+            <div className={overviewStyles.tableWrap}>
               <table>
                 <thead>
                   <tr>
-                    <th style={{ width: "35%" }}>Signal</th>
+                    <th>Signal</th>
                     <th>Source</th>
-                    <th style={{ width: "70px" }}>Score</th>
+                    <th>Score</th>
                     <th>Intent</th>
                     <th>Urgency</th>
+                    <th>Channel</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {signals.map((signal, index) => (
-                    <tr key={`${signal.title}-${index}`}>
-                      <td className={styles.tTitle}>
+                  {data.overviewSignals.map((signal) => (
+                    <tr key={signal.id}>
+                      <td className={overviewStyles.tableTitle}>
                         {signal.title}
-                        <span className={styles.sub}>{signal.sub}</span>
+                        <span className={overviewStyles.tableSub}>{signal.subtitle}</span>
                       </td>
                       <td>
-                        <SourcePill src={signal.src} />
+                        <SourcePill src={signal.source} />
                       </td>
                       <td>
                         <ScoreBadge score={signal.score} />
@@ -246,6 +235,7 @@ export default async function OverviewPage() {
                       <td>
                         <UrgencyChip urgency={signal.urgency} />
                       </td>
+                      <td className={overviewStyles.tableMeta}>{signal.originLabel}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -253,52 +243,69 @@ export default async function OverviewPage() {
             </div>
           </div>
 
-          <div className={`${styles.card} ${styles.compCard}`}>
-            <div className={styles.cardHead}>
+          <div className={overviewStyles.card}>
+            <div className={overviewStyles.cardHead}>
               <div>
-                <h3 className={styles.cardTitle}>Competitor Mentions</h3>
-                <div className={styles.cardSub}>Rolling 7 days</div>
+                <h3 className={overviewStyles.cardTitle}>Recent workflow runs</h3>
+                <div className={overviewStyles.cardSub}>
+                  Live telemetry mirrored from the Python side into workflow_runs.
+                </div>
               </div>
-              <button className={`${styles.btn} ${styles.smallBtn}`}>Full report →</button>
+              <Link href="/integrations" className={overviewStyles.smallLink}>
+                Full operations
+              </Link>
             </div>
-            <div className={styles.compList}>
-              {overviewCompetitors.map((competitor, index) => (
-                <div className={styles.cRow} key={`${competitor.name}-${index}`}>
-                  <div
-                    className={styles.cLogo}
-                    style={{
-                      background: competitor.bg || competitor.color,
-                      color: competitor.bg ? "#fff" : "transparent",
-                    }}
-                  >
-                    {!competitor.bg ? (
-                      <span style={{ color: "#fff" }}>{competitor.initials}</span>
-                    ) : null}
-                    {competitor.bg && competitor.initials === "T" ? (
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        style={{ color: competitor.color }}
-                      >
-                        <path d="M12 2L2 22h20L12 2z" />
-                      </svg>
-                    ) : null}
-                  </div>
-                  <div className={styles.cName}>{competitor.name}</div>
-                  <div className={styles.cVol}>{competitor.mentions}</div>
-                  <div className={styles.cBarWrap}>
-                    <div className={styles.cBarBg}>
-                      <div
-                        className={styles.cBarFill}
-                        style={{ width: `${competitor.pct}%`, background: competitor.color }}
-                      />
+            <div className={overviewStyles.workflowList}>
+              {recentWorkflowRuns.length ? (
+                recentWorkflowRuns.map((run) => (
+                  <div className={overviewStyles.workflowItem} key={run.id}>
+                    <div className={overviewStyles.workflowTop}>
+                      <div>
+                        <div className={overviewStyles.workflowName}>{run.workflow}</div>
+                        <div className={overviewStyles.workflowSub}>
+                          {run.lastActivityLabel} · {run.durationLabel} · {run.sourceSystem}
+                        </div>
+                      </div>
+                      <div className={overviewStyles.workflowStatus}>{run.status}</div>
+                    </div>
+                    <div className={overviewStyles.workflowStats}>
+                      <span>{run.postsDiscovered} discovered</span>
+                      <span>{run.draftsGenerated} drafts</span>
+                      <span>{run.redditLeads} Reddit leads</span>
+                      <span>{run.hotLeadAlertsSent} hot alerts</span>
                     </div>
                   </div>
-                  <div className={`${styles.cTrend} ${competitor.down ? styles.down : styles.up}`}>
-                    {competitor.down ? "↓" : "↑"} {competitor.delta}
+                ))
+              ) : (
+                <div className={overviewStyles.emptyState}>
+                  No workflow telemetry has been mirrored into Neon yet.
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className={overviewStyles.card}>
+            <div className={overviewStyles.cardHead}>
+              <div>
+                <h3 className={overviewStyles.cardTitle}>Competitor mentions</h3>
+                <div className={overviewStyles.cardSub}>Rolling 7-day comparison across sources.</div>
+              </div>
+              <Link href="/competitor-intelligence" className={overviewStyles.smallLink}>
+                Full report
+              </Link>
+            </div>
+            <div className={overviewStyles.competitorList}>
+              {data.overviewCompetitors.map((competitor) => (
+                <div className={overviewStyles.competitorRow} key={competitor.name}>
+                  <div className={overviewStyles.competitorName}>{competitor.name}</div>
+                  <div className={overviewStyles.competitorCount}>{competitor.mentions}</div>
+                  <div className={overviewStyles.competitorBar}>
+                    <div
+                      className={overviewStyles.competitorFill}
+                      style={{ width: `${competitor.pct}%`, background: competitor.color }}
+                    />
                   </div>
+                  <div className={overviewStyles.competitorDelta}>{competitor.delta}</div>
                 </div>
               ))}
             </div>
@@ -311,7 +318,7 @@ export default async function OverviewPage() {
 
 function buildDonutSegments(entries: Array<{ label: string; pct: number; color: string }>) {
   let offset = 0;
-  return entries.slice(0, 3).map((entry) => {
+  return entries.map((entry) => {
     const segment = {
       label: entry.label,
       pct: entry.pct,

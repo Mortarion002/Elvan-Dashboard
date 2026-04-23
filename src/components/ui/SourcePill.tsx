@@ -9,7 +9,7 @@ export function SourcePill({ src }: SourcePillProps) {
   const map = {
     x: { label: "X", cls: styles.x, letter: "X" },
     reddit: { label: "Reddit", cls: styles.reddit, letter: "R" },
-    hn: { label: "HackerNews", cls: styles.hn, letter: "Y" },
+    hn: { label: "Hacker News", cls: styles.hn, letter: "H" },
     ph: { label: "Product Hunt", cls: styles.ph, letter: "P" },
   };
 
