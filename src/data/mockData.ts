@@ -1,4 +1,4 @@
-export type SignalSource = "reddit" | "hn" | "ph";
+export type SignalSource = "x" | "reddit" | "hn" | "ph";
 export type Intent = "Buying" | "Comparing" | "Venting" | "Learning";
 export type Urgency = "high" | "mid" | "low";
 
