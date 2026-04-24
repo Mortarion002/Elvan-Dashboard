@@ -1,151 +1,188 @@
 .topbar {
+  height: 72px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  padding: 22px 32px 18px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-  background: linear-gradient(180deg, rgba(12, 16, 24, 0.96), rgba(12, 16, 24, 0.76));
-  backdrop-filter: blur(18px);
+  justify-content: space-between; 
+  gap: 24px;
+  padding: 0 32px;
+  border-bottom: 1px solid var(--border-soft);
+  background: var(--bg);
   position: sticky;
   top: 0;
   z-index: 12;
 }
 
-.summary {
-  min-width: 0;
+.search {
+  flex: 1;
+  max-width: 520px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 9px 12px;
+  color: var(--text-mute);
 }
 
-.eyebrow {
+.search input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 13.5px;
+}
+
+.search input::placeholder {
+  color: var(--text-mute);
+}
+
+.kbd {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  background: #0f1117;
+  border: 1px solid var(--border);
+  padding: 2px 6px;
+  border-radius: 5px;
+}
+
+.topRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.healthPill {
+  min-height: 38px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-elev);
+  color: var(--text-dim);
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-mute);
+  white-space: nowrap;
 }
 
 .modeDot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  box-shadow: 0 0 0 4px rgba(148, 163, 184, 0.08);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
 }
 
 .live {
-  background: #34d399;
+  background: var(--green);
 }
 
 .partial {
-  background: #f59e0b;
+  background: var(--amber);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
 }
 
 .fallback {
-  background: #f87171;
+  background: var(--red);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18);
 }
 
-.title {
-  margin-top: 8px;
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
+.iconBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  color: var(--text-dim);
+  position: relative;
+}
+
+.iconBtn:hover {
   color: var(--text);
 }
 
-.meta {
-  margin-top: 6px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  color: var(--text-dim);
-  font-size: 13px;
-}
-
-.meta span {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.meta span::before {
-  content: "";
-  width: 4px;
-  height: 4px;
+.pulse {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: rgba(148, 163, 184, 0.7);
+  background: var(--green);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
 }
 
-.actions {
+.user {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  justify-content: flex-end;
   gap: 10px;
+  padding: 4px 10px 4px 4px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-elev);
 }
 
-.statPill {
-  min-width: 108px;
-  padding: 10px 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(148, 163, 184, 0.14);
-  background: rgba(255, 255, 255, 0.03);
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--green), #86efac);
+  color: #04140b;
+  font-size: 12px;
+  font-weight: 800;
 }
 
-.statLabel {
-  display: block;
+.userName {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.userEmail {
   font-size: 11px;
   color: var(--text-mute);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
 }
 
-.statPill strong {
-  display: block;
-  margin-top: 6px;
-  font-size: 20px;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-}
-
-.linkBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 11px 16px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #60a5fa, #34d399);
-  color: #04140b;
-  font-weight: 700;
-  font-size: 13px;
-  box-shadow: 0 16px 28px -18px rgba(96, 165, 250, 0.8);
+.user svg {
+  color: var(--text-mute);
 }
 
 @media (max-width: 1040px) {
   .topbar {
     padding-inline: 24px;
-    align-items: flex-start;
-    flex-direction: column;
   }
 
-  .actions {
-    width: 100%;
-    justify-content: flex-start;
+  .healthPill,
+  .userEmail {
+    display: none;
   }
 }
 
 @media (max-width: 640px) {
-  .title {
-    font-size: 18px;
+  .topbar {
+    height: auto;
+    padding: 14px 16px;
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .meta {
-    gap: 8px;
-    font-size: 12px;
+  .search {
+    max-width: none;
   }
 
-  .statPill {
-    min-width: 92px;
+  .topRight {
+    justify-content: space-between;
+  }
+
+  .userName {
+    display: none;
   }
 }

@@ -1,154 +1,75 @@
 .sidebar {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 18%),
-    rgba(9, 12, 19, 0.92);
-  border-right: 1px solid rgba(148, 163, 184, 0.14);
-  padding: 24px 18px;
+  background: var(--bg);
+  border-right: 1px solid var(--border-soft);
+  padding: 22px 16px;
   display: flex;
   flex-direction: column;
   gap: 4px;
   position: sticky;
   top: 0;
   height: 100vh;
-  backdrop-filter: blur(16px);
-  transition: padding 0.22s ease;
-}
-
-.collapsed {
-  padding-inline: 14px;
 }
 
 .logo {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 4px 48px 24px 12px;
+  padding: 0 12px 22px;
   min-width: 0;
-  transition: padding 0.22s ease, gap 0.22s ease;
 }
 
 .logoMark {
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #34d399, #60a5fa);
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--green);
   display: grid;
   place-items: center;
-  box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.2), 0 12px 28px -12px rgba(96, 165, 250, 0.7);
-  position: relative;
-  flex: 0 0 38px;
-}
-
-.logoMark::after {
-  content: "";
-  position: absolute;
-  inset: 8px;
-  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.55), transparent 55%);
-  border-radius: 10px;
-}
-
-.logoMark svg {
-  position: relative;
-  z-index: 1;
+  box-shadow: 0 10px 24px -10px rgba(34, 197, 94, 0.7);
+  flex: 0 0 34px;
 }
 
 .logoText {
   font-weight: 800;
   font-size: 20px;
-  letter-spacing: -0.02em;
   white-space: nowrap;
   overflow: hidden;
   max-width: 160px;
-  transition: opacity 0.16s ease, max-width 0.22s ease, transform 0.22s ease;
 }
 
 .dot {
-  color: #60a5fa;
-}
-
-.toggleButton {
-  position: absolute;
-  top: 28px;
-  right: 18px;
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  background: rgba(15, 19, 28, 0.88);
-  color: var(--text-dim);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition:
-    color 0.18s ease,
-    background 0.18s ease,
-    border-color 0.18s ease,
-    transform 0.18s ease,
-    right 0.22s ease;
-}
-
-.toggleButton:hover {
-  color: var(--text);
-  background: rgba(21, 24, 33, 0.98);
-  border-color: rgba(96, 165, 250, 0.2);
-}
-
-.toggleButton svg {
-  width: 16px;
-  height: 16px;
-  transition: transform 0.22s ease;
-}
-
-.collapsed .toggleButton {
-  right: 10px;
-}
-
-.collapsed .toggleButton svg {
-  transform: rotate(180deg);
+  color: var(--green);
 }
 
 .navLabel {
   font-size: 10.5px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   color: var(--text-mute);
   padding: 18px 12px 8px;
   overflow: hidden;
-  max-height: 40px;
   white-space: nowrap;
-  transition:
-    opacity 0.16s ease,
-    max-height 0.22s ease,
-    padding 0.22s ease,
-    transform 0.22s ease;
 }
 
 .navItem {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 11px 12px;
-  min-height: 44px;
-  border-radius: 12px;
+  padding: 10px 12px;
+  min-height: 42px;
+  border-radius: 10px;
   color: var(--text-dim);
   font-weight: 500;
   font-size: 14px;
   cursor: pointer;
   position: relative;
-  transition:
-    background 0.18s ease,
-    color 0.18s ease,
-    transform 0.18s ease,
-    padding 0.22s ease,
-    gap 0.22s ease;
+  transition: background 0.12s ease, color 0.12s ease;
 }
 
 .navItem:hover {
-  background: rgba(21, 24, 33, 0.92);
+  background: var(--bg-elev);
   color: var(--text);
-  transform: translateX(2px);
 }
 
 .ico {
@@ -162,71 +83,71 @@
   white-space: nowrap;
   overflow: hidden;
   max-width: 160px;
-  transition: opacity 0.16s ease, max-width 0.22s ease, transform 0.22s ease;
 }
 
 .active {
-  background:
-    linear-gradient(90deg, rgba(96, 165, 250, 0.1), transparent 80%),
-    rgba(21, 24, 33, 0.98);
+  background: var(--bg-elev);
   color: var(--text);
-  box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.12);
 }
 
 .active::before {
   content: "";
-  position: absolute;
+  position: absolute; 
   left: -18px;
   top: 8px;
   bottom: 8px;
-  width: 4px;
-  border-radius: 0 4px 4px 0;
-  background: linear-gradient(180deg, #60a5fa, #34d399);
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--green);
 }
 
 .badge {
   margin-left: auto;
-  background: rgba(96, 165, 250, 0.12);
-  color: #93c5fd;
+  background: var(--green-soft);
+  color: var(--green);
   font-size: 11px;
-  font-weight: 700;
-  padding: 2px 8px;
+  font-weight: 600;
+  padding: 2px 7px;
   border-radius: 999px;
-  border: 1px solid rgba(96, 165, 250, 0.2);
   font-variant-numeric: tabular-nums;
-  transition: transform 0.22s ease, right 0.22s ease, top 0.22s ease;
 }
 
-.collapsed .logo {
-  padding-right: 40px;
+.hotBadge {
+  background: rgba(239, 68, 68, 0.14);
+  color: #fca5a5;
 }
 
-.collapsed .logoText,
-.collapsed .navText {
-  opacity: 0;
-  max-width: 0;
-  transform: translateX(-6px);
+.sidebarFooter {
+  margin-top: auto;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  background: linear-gradient(160deg, var(--bg-elev), #10131b 80%);
 }
 
-.collapsed .navLabel {
-  opacity: 0;
-  max-height: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-  transform: translateY(-4px);
+.upgradeTitle {
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 8px;
 }
 
-.collapsed .navItem {
+.upgradeSub {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.45;
+  margin-bottom: 12px;
+}
+
+.upgradeBtn {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
-  padding-inline: 0;
-  gap: 0;
-}
-
-.collapsed .badge {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  margin-left: 0;
+  background: var(--green);
+  color: #04140b;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 7px 12px;
+  border-radius: 8px;
 }
 
 @media (max-width: 1120px) {
@@ -234,10 +155,10 @@
     padding-inline: 14px;
   }
 
-  .toggleButton,
   .logoText,
   .navText,
-  .navLabel {
+  .navLabel,
+  .sidebarFooter {
     display: none;
   }
 
@@ -266,7 +187,8 @@
     width: 100%;
     border-right: none;
     border-bottom: 1px solid rgba(148, 163, 184, 0.14);
-    display: block;
+    display: flex;
+    height: auto;
   }
 
   .logo {
@@ -283,11 +205,8 @@
 
   .navLabel {
     display: block;
-    max-height: 40px;
-    opacity: 1;
     padding-top: 18px;
     padding-bottom: 8px;
-    transform: none;
   }
 
   .navItem {
@@ -308,5 +227,9 @@
     top: auto;
     bottom: -1px;
     border-radius: 2px 2px 0 0;
+  }
+
+  .sidebarFooter {
+    display: none;
   }
 }

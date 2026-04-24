@@ -10,6 +10,13 @@ export const dynamic = "force-dynamic";
 export default async function HotLeadsPage() {
   const data = await loadDashboardData();
   const alertedHotLeads = data.hotLeadSignals.filter((signal) => signal.alerted);
+  const avgScore =
+    data.hotLeadSignals.length > 0
+      ? (
+          data.hotLeadSignals.reduce((total, signal) => total + signal.score, 0) /
+          data.hotLeadSignals.length
+        ).toFixed(1)
+      : "0.0";
 
   return (
     <div className={styles.content}>
@@ -17,16 +24,16 @@ export default async function HotLeadsPage() {
         <div>
           <h1 className={styles.pageTitle}>Hot Leads</h1>
           <div className={styles.pageSub}>
-            Highest-intent signals across the Python acquisition bots and n8n collection workflows,
-            sorted into a single review queue.
+            Signals with boosted score 8+ requiring immediate attention.
+            <span className={styles.alertDot}>{data.pendingAlertSignals.length} unreviewed</span>
           </div>
         </div>
         <div className={styles.actions}>
           <Link href="/alerts" className={styles.btn}>
-            Alert operations
+            Export
           </Link>
           <Link href="/signal-feed" className={`${styles.btn} ${styles.primaryBtn}`}>
-            Full signal feed
+            Mark all reviewed
           </Link>
         </div>
       </div>
@@ -34,27 +41,41 @@ export default async function HotLeadsPage() {
       <div className={styles.stats}>
         <div className={styles.statCard}>
           <div className={styles.statValue}>{data.hotLeadSignals.length}</div>
-          <div className={styles.statLabel}>Live hot leads</div>
+          <div className={styles.statLabel}>Total hot leads</div>
           <div className={styles.statMeta}>Signals marked hot, urgent, or scoring 8+.</div>
         </div>
         <div className={styles.statCard}>
           <div className={styles.statValue}>{data.pendingAlertSignals.length}</div>
-          <div className={styles.statLabel}>Need review</div>
+          <div className={styles.statLabel}>Unreviewed</div>
           <div className={styles.statMeta}>High-priority items still waiting for operator action.</div>
         </div>
         <div className={styles.statCard}>
           <div className={styles.statValue}>{alertedHotLeads.length}</div>
-          <div className={styles.statLabel}>Already alerted</div>
+          <div className={styles.statLabel}>Reviewed</div>
           <div className={styles.statMeta}>
             Hot leads already pushed through an alerting step in the source pipeline.
           </div>
         </div>
         <div className={styles.statCard}>
-          <div className={styles.statValue}>{data.draftGapSignals.length}</div>
-          <div className={styles.statLabel}>Missing drafts</div>
+          <div className={styles.statValue}>{avgScore}</div>
+          <div className={styles.statLabel}>Avg score</div>
           <div className={styles.statMeta}>
-            High-signal records that still need a suggested reply or response draft.
+            Mean boosted score across the current hot lead queue.
           </div>
+        </div>
+      </div>
+
+      <div className={styles.filterBar}>
+        <div className={styles.filterGroup}>
+          <span className={styles.filterLabel}>Review state</span>
+          <span className={`${styles.pill} ${styles.pillActive}`}>Needs action</span>
+          <span className={styles.pill}>Already alerted</span>
+          <span className={styles.pill}>Missing drafts</span>
+        </div>
+        <div className={styles.filterGroup}>
+          <span className={styles.filterLabel}>Minimum score</span>
+          <span className={`${styles.pill} ${styles.pillActive}`}>8+</span>
+          <span className={styles.pill}>9+</span>
         </div>
       </div>
 

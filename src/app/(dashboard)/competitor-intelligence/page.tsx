@@ -16,16 +16,16 @@ export default async function CompetitorIntelligencePage() {
         <div>
           <h1 className={styles.pageTitle}>Competitor Intelligence</h1>
           <div className={styles.pageSub}>
-            Tool mentions aggregated across X/Post, Reddit, Hacker News, and Product Hunt so you can
-            spot overlap, pressure points, and where Elvan has the clearest wedge.
+            Track competitor mentions and buying signals across all sources.
+            <span className={styles.liveDot}>Updated {data.statusSummary.lastSignalLabel}</span>
           </div>
         </div>
         <div className={styles.actions}>
           <Link href="/signal-feed" className={styles.btn}>
-            Signal feed
+            Export report
           </Link>
           <Link href="/overview" className={`${styles.btn} ${styles.primaryBtn}`}>
-            Overview
+            Track competitor
           </Link>
         </div>
       </div>

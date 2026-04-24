@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -14,15 +13,6 @@ type SidebarProps = {
 
 export function Sidebar({ navigationCounts, unhealthyChannels }: SidebarProps) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
-
-  useEffect(() => {
-    document.documentElement.dataset.sidebar = collapsed ? "collapsed" : "expanded";
-
-    return () => {
-      delete document.documentElement.dataset.sidebar;
-    };
-  }, [collapsed]);
 
   const mainNav = [
     {
@@ -57,7 +47,7 @@ export function Sidebar({ navigationCounts, unhealthyChannels }: SidebarProps) {
     },
     {
       href: "/signal-feed",
-      label: "Signal Feed",
+      label: "Signals",
       badge: formatBadge(navigationCounts.signals),
       icon: (
         <svg
@@ -97,7 +87,7 @@ export function Sidebar({ navigationCounts, unhealthyChannels }: SidebarProps) {
   const settingsNav = [
     {
       href: "/alerts",
-      label: "Alerts",
+      label: "Settings",
       badge: formatBadge(navigationCounts.alerts),
       icon: (
         <svg
@@ -116,7 +106,7 @@ export function Sidebar({ navigationCounts, unhealthyChannels }: SidebarProps) {
     },
     {
       href: "/integrations",
-      label: "Integrations",
+      label: "Health",
       badge: unhealthyChannels ? formatBadge(unhealthyChannels) : undefined,
       icon: (
         <svg
@@ -137,7 +127,7 @@ export function Sidebar({ navigationCounts, unhealthyChannels }: SidebarProps) {
   ];
 
   return (
-    <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ""}`}>
+    <aside className={styles.sidebar}>
       <div className={styles.logo}>
         <div className={styles.logoMark}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -152,23 +142,11 @@ export function Sidebar({ navigationCounts, unhealthyChannels }: SidebarProps) {
           </svg>
         </div>
         <div className={styles.logoText}>
-          Elvan<span className={styles.dot}>.</span>ai
+          Elvan<span className={styles.dot}>.</span>
         </div>
       </div>
 
-      <button
-        type="button"
-        className={styles.toggleButton}
-        onClick={() => setCollapsed((current) => !current)}
-        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-          <path d="M15 6l-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
-
-      <div className={styles.navLabel}>Signal Views</div>
+      <div className={styles.navLabel}>Menu</div>
 
       {mainNav.map((item) => (
         <Link
@@ -176,15 +154,19 @@ export function Sidebar({ navigationCounts, unhealthyChannels }: SidebarProps) {
           href={item.href}
           className={`${styles.navItem} ${pathname === item.href ? styles.active : ""}`}
           aria-label={item.label}
-          title={collapsed ? item.label : undefined}
+          title={item.label}
         >
           {item.icon}
           <span className={styles.navText}>{item.label}</span>
-          {item.badge ? <span className={styles.badge}>{item.badge}</span> : null}
+          {item.badge ? (
+            <span className={`${styles.badge} ${item.href === "/hot-leads" ? styles.hotBadge : ""}`}>
+              {item.badge}
+            </span>
+          ) : null}
         </Link>
       ))}
 
-      <div className={styles.navLabel}>Operations</div>
+      <div className={styles.navLabel}>General</div>
 
       {settingsNav.map((item) => (
         <Link
@@ -192,13 +174,23 @@ export function Sidebar({ navigationCounts, unhealthyChannels }: SidebarProps) {
           href={item.href}
           className={`${styles.navItem} ${pathname === item.href ? styles.active : ""}`}
           aria-label={item.label}
-          title={collapsed ? item.label : undefined}
+          title={item.label}
         >
           {item.icon}
           <span className={styles.navText}>{item.label}</span>
           {item.badge ? <span className={styles.badge}>{item.badge}</span> : null}
         </Link>
       ))}
+
+      <div className={styles.sidebarFooter}>
+        <div className={styles.upgradeTitle}>Pro features</div>
+        <div className={styles.upgradeSub}>
+          Unlock keyword tracking, Slack alerts, and unlimited exports.
+        </div>
+        <Link href="/integrations" className={styles.upgradeBtn}>
+          Upgrade plan
+        </Link>
+      </div>
     </aside>
   );
 }

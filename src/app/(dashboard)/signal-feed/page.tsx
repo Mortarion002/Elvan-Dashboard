@@ -16,16 +16,16 @@ export default async function SignalFeedPage() {
         <div>
           <h1 className={styles.pageTitle}>Signal Feed</h1>
           <div className={styles.pageSub}>
-            Full unified feed from mirrored Neon rows and Notion records, deduplicated into one
-            operator-facing timeline.
+            All captured signals across sources.
+            <span className={styles.liveDot}>Live {data.statusSummary.lastSignalLabel}</span>
           </div>
         </div>
         <div className={styles.actions}>
           <Link href="/overview" className={styles.btn}>
-            Overview
+            Export CSV
           </Link>
           <Link href="/integrations" className={`${styles.btn} ${styles.primaryBtn}`}>
-            Data health
+            New tracker
           </Link>
         </div>
       </div>
@@ -52,6 +52,30 @@ export default async function SignalFeedPage() {
           <div className={styles.statValue}>{data.coverage.notionOnlySignals}</div>
           <div className={styles.statLabel}>Notion only</div>
           <div className={styles.statMeta}>Signals not yet mirrored or intentionally retained in Notion.</div>
+        </div>
+      </div>
+
+      <div className={styles.filterBar}>
+        <div className={styles.filterGroup}>
+          <span className={styles.filterLabel}>Source</span>
+          <span className={`${styles.pill} ${styles.pillActive}`}>All</span>
+          {data.sourceSummaries.map((summary) => (
+            <span className={styles.pill} key={summary.source}>
+              {summary.label}
+            </span>
+          ))}
+        </div>
+        <div className={styles.filterGroup}>
+          <span className={styles.filterLabel}>Intent</span>
+          <span className={`${styles.pill} ${styles.pillActive}`}>All</span>
+          <span className={styles.pill}>Buying</span>
+          <span className={styles.pill}>Comparing</span>
+          <span className={styles.pill}>Venting</span>
+        </div>
+        <div className={styles.filterGroup}>
+          <span className={styles.filterLabel}>Sort</span>
+          <span className={`${styles.pill} ${styles.pillActive}`}>Newest</span>
+          <span className={styles.pill}>Score</span>
         </div>
       </div>
 

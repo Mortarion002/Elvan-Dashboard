@@ -24,16 +24,17 @@ export default async function OverviewPage() {
         <div>
           <h1 className={viewStyles.pageTitle}>Overview</h1>
           <div className={viewStyles.pageSub}>
-            Live read-only aggregation across X/Post, Reddit, Hacker News, Product Hunt, Neon, and
-            Notion. The dashboard consumes the parallel channel and does not modify source systems.
+            Monitor buying signals across X/Post, Reddit, Hacker News, Product Hunt, Neon, and
+            Notion.
+            <span className={viewStyles.liveDot}>Live {data.statusSummary.lastSignalLabel}</span>
           </div>
         </div>
         <div className={viewStyles.actions}>
           <Link href="/signal-feed" className={viewStyles.btn}>
-            Full signal feed
+            Export
           </Link>
           <Link href="/integrations" className={`${viewStyles.btn} ${viewStyles.primaryBtn}`}>
-            Pipeline health
+            New tracker
           </Link>
         </div>
       </div>
@@ -54,7 +55,7 @@ export default async function OverviewPage() {
       <div className={overviewStyles.statsStrip}>
         <div className={overviewStyles.stripCard}>
           <div className={overviewStyles.num}>{data.metrics.signalsThisWeek}</div>
-          <div className={overviewStyles.lbl}>Signals this week</div>
+          <div className={overviewStyles.lbl}>Total signals</div>
           <div className={overviewStyles.meta}>All unified records captured in the last 7 days.</div>
         </div>
         <div className={overviewStyles.stripCard}>
@@ -85,8 +86,8 @@ export default async function OverviewPage() {
           <div className={overviewStyles.card}>
             <div className={overviewStyles.cardHead}>
               <div>
-                <h3 className={overviewStyles.cardTitle}>Trend (7d)</h3>
-                <div className={overviewStyles.cardSub}>Cross-channel signal volume</div>
+                <h3 className={overviewStyles.cardTitle}>Signals by source</h3>
+                <div className={overviewStyles.cardSub}>Volume across connected channels</div>
               </div>
             </div>
             <div className={overviewStyles.barChart}>
@@ -106,7 +107,7 @@ export default async function OverviewPage() {
           <div className={overviewStyles.card}>
             <div className={overviewStyles.cardHead}>
               <div>
-                <h3 className={overviewStyles.cardTitle}>Source mix</h3>
+                <h3 className={overviewStyles.cardTitle}>Intent mix</h3>
                 <div className={overviewStyles.cardSub}>Distribution of unified records</div>
               </div>
             </div>
