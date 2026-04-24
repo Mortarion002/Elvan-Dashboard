@@ -1,88 +1,157 @@
 # Elvan Signal Bot Dashboard
 
-Next.js dashboard for viewing Elvan signal data across X_Post, Reddit, Hacker News, Product Hunt, Neon, and Notion.
+Live: https://elvan-dashboard.vercel.app/
 
-The dashboard is a read-only aggregation layer. It does not replace or modify the operational stores used by `X_Post` or the n8n workflows.
+A unified observability and intelligence layer for multiple production AI systems.
 
-## What It Reads
+---
 
-- Neon for mirrored X_Post findings
-- Neon for mirrored HN and Product Hunt signals from n8n
-- Notion for the existing n8n primary signals database
-- Notion weekly reports when configured
+## Why this exists
 
-If live credentials are missing, the UI falls back to mock data so the app still renders.
+At Elvan, we had multiple AI workflows running in parallel:
 
-## Stack
+- X / Reddit research bot
+- n8n pipelines scanning Hacker News and Product Hunt
+- Notion as the primary signal store
+- Neon as an analytics mirror
 
-- Next.js App Router
-- React 19
-- TypeScript
-- CSS Modules
-- `@neondatabase/serverless` for Neon access
+Each system worked independently.
+
+The problem:
+There was no single place to understand what was happening.
+
+No visibility into:
+
+- what signals were being generated
+- which workflows were healthy
+- where leads were coming from
+- whether systems were silently failing
+
+This dashboard solves that.
+
+---
+
+## What it does
+
+This is a read-only aggregation layer that brings all AI workflows into one operator-facing interface.
+
+It provides:
+
+- **Unified signal feed** across X, Reddit, HN, Product Hunt
+- **Hot lead detection** with prioritization
+- **Workflow observability (partial, via mirrored data)**
+- **Alert tracking and state**
+- **Competitor and signal intelligence views**
+
+The key idea:
+
+> keep all systems independent, but give humans one place to reason about them
+
+---
+
+## System Architecture
+
+Three independent systems:
+
+### 1. X_Post Bot (Python)
+
+- Scans X and Reddit
+- Scores relevance using LLMs
+- Sends Telegram digests
+- Mirrors results to Neon
+
+### 2. n8n Signal Pipeline
+
+- Scrapes Hacker News + Product Hunt
+- Enriches signals with LLMs
+- Stores in Notion (source of truth)
+- Mirrors to Neon
+
+### 3. Dashboard (this repo)
+
+- Reads from Neon + Notion
+- Aggregates data into UI
+- Never writes to upstream systems
+
+**Design principle:**
+
+- operational systems stay decoupled
+- dashboard is purely observational
+
+---
+
+## Tech Stack
+
+- Next.js (App Router)
+- React 19 + TypeScript
+- Neon Postgres (analytics layer)
+- Notion API (primary workflow datastore)
+
+---
+
+## AI-first development workflow
+
+This project was built using AI agents as the primary development environment:
+
+- Architecture → Gemini
+- UI mockups → Google Stitch
+- Design iteration → Claude Design
+- Implementation → Claude Code + Codex
+
+AI handled:
+
+- scaffolding
+- repetitive logic
+- UI structure
+
+I handled:
+
+- system design
+- correctness
+- architecture decisions
+
+---
 
 ## Local Development
 
-Install dependencies:
-
 ```bash
 npm install
-```
-
-Copy `.env.example` to `.env.local` and fill in:
-
-```env
-NEON_DATABASE_URL=your_neon_postgres_connection_string
-NOTION_API_KEY=your_notion_integration_token
-NOTION_DB_ID=your_primary_signals_database_id
-NOTION_WEEKLY_DB_ID=your_weekly_reports_database_id
-```
-
-Run the app:
-
-```bash
 npm run dev
 ```
 
-Open `http://localhost:3000`.
-
-## Vercel Deployment
-
-This app is ready to run on Vercel as a server-rendered dashboard.
-
-Required Vercel environment variables:
+Setup `.env.local`:
 
 ```env
-NEON_DATABASE_URL=your_neon_postgres_connection_string
-NOTION_API_KEY=your_notion_integration_token
-NOTION_DB_ID=your_primary_signals_database_id
-NOTION_WEEKLY_DB_ID=your_weekly_reports_database_id
+NEON_DATABASE_URL=
+NOTION_API_KEY=
+NOTION_DB_ID=
+NOTION_WEEKLY_DB_ID=
 ```
 
-Recommended deployment flow:
+---
 
-1. Import the GitHub repo in Vercel or run `vercel link` from this folder.
-2. Add the four environment variables in Vercel for `Production`, `Preview`, and `Development`.
-3. Run `vercel --prod` for the first live deployment.
+## Key Design Decisions
 
-Deployment notes:
+- **Read-only architecture** → no risk to upstream systems
+- **Fail-open data model** → workflows don’t depend on dashboard
+- **Neon as shared analytics layer** → decouples UI from execution
+- **Notion as source of truth** → keeps workflows stable
 
-- The dashboard stays read-only against Neon and Notion.
-- The dashboard layout is pinned to the Node.js runtime for server-side data access.
-- Notion weekly reports are optional. If that database is empty or missing records, the rest of the dashboard still works.
+---
 
-## Main Areas
+## What I’d improve next
 
-- `/overview` for top-level metrics and workflow health
-- `/hot-leads` for high-priority signals
-- `/signal-feed` for the full unified timeline
-- `/competitor-intelligence` for tool and competitor mentions
-- `/alerts` for alert review state
-- `/integrations` for channel and workflow health
+Add a workflow heartbeat system:
 
-## Project Structure
+- each workflow logs execution status (success/failure/latency)
+- dashboard surfaces real-time health
+- alerts trigger on missed runs
 
-- `src/app` contains App Router pages and layouts
-- `src/components` contains layout and UI components
-- `src/data` contains mock fallback data
-- `src/lib/dashboardData.ts` contains live Neon and Notion aggregation logic
+This would turn the dashboard into a full observability system.
+
+---
+
+## Author
+
+Aman Kumar
+https://amankumar002u.tech
