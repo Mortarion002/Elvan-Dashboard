@@ -16,8 +16,8 @@ export default async function SignalFeedPage() {
         <div>
           <h1 className={styles.pageTitle}>Signal Feed</h1>
           <div className={styles.pageSub}>
-            Full unified feed from mirrored Neon rows and Notion records, deduplicated into one
-            operator-facing timeline.
+            Full unified feed from Neon operational rows, with optional legacy Notion records when
+            enabled.
           </div>
         </div>
         <div className={styles.actions}>
@@ -35,23 +35,23 @@ export default async function SignalFeedPage() {
           <div className={styles.statValue}>{data.coverage.totalSignals}</div>
           <div className={styles.statLabel}>Unified records</div>
           <div className={styles.statMeta}>
-            Final feed count after merging mirrored Neon rows with Notion records.
+            Final feed count after merging Neon rows with any enabled legacy archive records.
           </div>
         </div>
         <div className={styles.statCard}>
           <div className={styles.statValue}>{data.coverage.mirroredSignals}</div>
           <div className={styles.statLabel}>Seen in both</div>
-          <div className={styles.statMeta}>Signals present in both Neon and Notion.</div>
+          <div className={styles.statMeta}>Signals present in both Neon and the legacy archive.</div>
         </div>
         <div className={styles.statCard}>
           <div className={styles.statValue}>{data.coverage.neonOnlySignals}</div>
           <div className={styles.statLabel}>Neon only</div>
-          <div className={styles.statMeta}>Usually X_Post or Reddit monitor records.</div>
+          <div className={styles.statMeta}>Operational records from the active producers.</div>
         </div>
         <div className={styles.statCard}>
           <div className={styles.statValue}>{data.coverage.notionOnlySignals}</div>
           <div className={styles.statLabel}>Notion only</div>
-          <div className={styles.statMeta}>Signals not yet mirrored or intentionally retained in Notion.</div>
+          <div className={styles.statMeta}>Archived legacy records, if legacy import is enabled.</div>
         </div>
       </div>
 

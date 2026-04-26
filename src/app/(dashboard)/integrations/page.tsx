@@ -17,8 +17,8 @@ export default async function IntegrationsPage() {
         <div>
           <h1 className={styles.pageTitle}>Integrations</h1>
           <div className={styles.pageSub}>
-            Read-only operational view of the shared Neon mirror, Notion databases, and the producer
-            systems feeding the dashboard.
+            Read-only operational view of the shared Neon signal store, optional Notion reports, and
+            the producer systems feeding the dashboard.
           </div>
         </div>
         <div className={styles.actions}>
@@ -132,7 +132,7 @@ export default async function IntegrationsPage() {
             <div>
               <h2 className={styles.cardTitle}>Coverage breakdown</h2>
               <div className={styles.cardSub}>
-                How many signals are mirrored, Neon-only, or Notion-only right now.
+                How many signals are represented in Neon, both stores, or the optional legacy archive.
               </div>
             </div>
           </div>
@@ -140,17 +140,17 @@ export default async function IntegrationsPage() {
             <div className={styles.sourceCard}>
               <div className={styles.sourceName}>Mirrored</div>
               <div className={styles.metricValue}>{data.coverage.mirroredSignals}</div>
-              <div className={styles.statMeta}>Rows visible in both Neon and Notion after merge.</div>
+              <div className={styles.statMeta}>Rows visible in both Neon and the legacy Notion archive.</div>
             </div>
             <div className={styles.sourceCard}>
               <div className={styles.sourceName}>Neon only</div>
               <div className={styles.metricValue}>{data.coverage.neonOnlySignals}</div>
-              <div className={styles.statMeta}>Most often X_Post and standalone Reddit monitor records.</div>
+              <div className={styles.statMeta}>Operational records from X_Post, Reddit monitor, and n8n.</div>
             </div>
             <div className={styles.sourceCard}>
               <div className={styles.sourceName}>Notion only</div>
               <div className={styles.metricValue}>{data.coverage.notionOnlySignals}</div>
-              <div className={styles.statMeta}>Records still only present in the Notion operational store.</div>
+              <div className={styles.statMeta}>Archived legacy signals included only when explicitly enabled.</div>
             </div>
           </div>
         </div>

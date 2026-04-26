@@ -21,6 +21,8 @@ const MAX_WORKFLOW_RUN_ROWS = 100;
 const MAX_NOTION_PAGES = 20;
 const NOTION_PAGE_SIZE = 100;
 const DASHBOARD_CACHE_TTL_MS = 15_000;
+const ENABLE_LEGACY_NOTION_SIGNALS =
+  process.env.ENABLE_LEGACY_NOTION_SIGNALS?.toLowerCase() === "true";
 
 const SOURCE_COLORS: Record<SignalSource, string> = {
   x: "#60a5fa",
@@ -588,9 +590,13 @@ async function loadWorkflowRuns(): Promise<LoaderResult<WorkflowRun>> {
 }
 
 async function loadNotionSignals(): Promise<LoaderResult<UnifiedSignal>> {
+  if (!ENABLE_LEGACY_NOTION_SIGNALS) {
+    return disabledLoaderResult();
+  }
+
   const result = await fetchNotionDatabasePages({
     databaseId: process.env.NOTION_DB_ID,
-    label: "primary signals",
+    label: "legacy signals",
     sortProperty: "Created At",
   });
   return {
@@ -736,11 +742,11 @@ function buildStatusSummary(params: {
   const warnings: string[] = [];
 
   if (params.neonSignalsResult.error) {
-    warnings.push("Neon is configured but the dashboard could not read mirrored signal rows.");
+    warnings.push("Neon is configured but the dashboard could not read operational signal rows.");
   }
 
   if (params.notionSignalsResult.error) {
-    warnings.push("Notion is configured but the dashboard could not read the primary signals database.");
+    warnings.push("Legacy Notion signal import is enabled but the dashboard could not read that database.");
   }
 
   if (params.workflowRunsResult.error) {
@@ -768,8 +774,7 @@ function buildStatusSummary(params: {
   } else if (
     params.neonSignalsResult.error ||
     params.notionSignalsResult.error ||
-    !params.neonSignalsResult.items.length ||
-    !params.notionSignalsResult.items.length
+    !params.neonSignalsResult.items.length
   ) {
     mode = "partial";
   }
@@ -778,13 +783,13 @@ function buildStatusSummary(params: {
     mode,
     label:
       mode === "live"
-        ? "Live parallel channel"
+        ? "Live Neon operations"
         : mode === "partial"
           ? "Partially live"
           : "Fallback mode",
     description:
       mode === "live"
-        ? "Dashboard is reading mirrored Neon data plus Notion without writing back to either operational system."
+        ? "Dashboard is reading the shared Neon signal table without writing back to any operational system."
         : mode === "partial"
           ? "Dashboard is connected, but at least one upstream source is missing, stale, or degraded."
           : "Live sources are unavailable, so the dashboard is rendering fallback data only.",
@@ -1050,7 +1055,7 @@ function buildChannelStatuses(params: {
   return [
     {
       key: "neon",
-      label: "Shared Neon mirror",
+      label: "Shared Neon signal store",
       category: "Data channel",
       status: resolveChannelState({
         enabled: params.neonSignalsResult.enabled,
@@ -1059,30 +1064,32 @@ function buildChannelStatuses(params: {
         lastSyncAt: latestNeonSignal,
       }),
       description: "Read-only aggregation from signal_events and workflow_runs.",
-      detail: `${params.neonSignalsResult.totalCount} mirrored records available to the dashboard.`,
+      detail: `${params.neonSignalsResult.totalCount} operational signal records available to the dashboard.`,
       recordCount: params.neonSignalsResult.totalCount,
       readOnly: true,
       lastSyncAt: latestNeonSignal,
       lastSyncLabel: formatLongTimestamp(latestNeonSignal),
-      warnings: buildLoaderWarnings(params.neonSignalsResult, "Neon mirror"),
+      warnings: buildLoaderWarnings(params.neonSignalsResult, "Neon signal store"),
     },
     {
-      key: "notion-primary",
-      label: "Notion primary database",
-      category: "Data channel",
+      key: "legacy-notion-signals",
+      label: "Legacy Notion signals",
+      category: "Optional archive",
       status: resolveChannelState({
         enabled: params.notionSignalsResult.enabled,
         error: params.notionSignalsResult.error,
         count: notionSignals.length,
         lastSyncAt: latestNotionSignal,
       }),
-      description: "Primary n8n datastore used for digests, alerts, and medium-priority follow-up.",
-      detail: `${params.notionSignalsResult.totalCount} Notion records fetched for dashboard aggregation.`,
+      description: "Optional archive of the old n8n signal database, disabled unless explicitly enabled.",
+      detail: params.notionSignalsResult.enabled
+        ? `${params.notionSignalsResult.totalCount} legacy Notion records fetched for dashboard aggregation.`
+        : "Set ENABLE_LEGACY_NOTION_SIGNALS=true to include archived Notion signal rows.",
       recordCount: params.notionSignalsResult.totalCount,
       readOnly: true,
       lastSyncAt: latestNotionSignal,
       lastSyncLabel: formatLongTimestamp(latestNotionSignal),
-      warnings: buildLoaderWarnings(params.notionSignalsResult, "Notion primary DB"),
+      warnings: buildLoaderWarnings(params.notionSignalsResult, "Legacy Notion signals"),
     },
     {
       key: "x-post",
@@ -1114,7 +1121,7 @@ function buildChannelStatuses(params: {
         hasSignals: params.mergedSignals.some((signal) => signal.sourceSystem === "reddit_monitor"),
         hasError: false,
       }),
-      description: "Standalone Reddit monitoring remains owned by the Python side and arrives through the same parallel channel.",
+      description: "Standalone Reddit monitoring remains owned by the Python side and arrives through Neon.",
       detail: `${params.mergedSignals.filter((signal) => signal.sourceSystem === "reddit_monitor").length} Reddit monitor records available in Neon.`,
       recordCount: params.mergedSignals.filter((signal) => signal.sourceSystem === "reddit_monitor").length,
       readOnly: true,
@@ -1129,9 +1136,9 @@ function buildChannelStatuses(params: {
       status: resolveProducerState({
         lastSyncAt: latestN8nSignal,
         hasSignals: params.mergedSignals.some((signal) => signal.sourceSystem === "n8n"),
-        hasError: Boolean(params.notionSignalsResult.error),
+        hasError: Boolean(params.neonSignalsResult.error),
       }),
-      description: "Collector workflow keeps Notion as source of truth while dual-writing mirrored records into Neon.",
+      description: "Collector workflow writes HN and Product Hunt signals into Neon; alerting and summaries read from there.",
       detail: `${params.mergedSignals.filter((signal) => signal.sourceSystem === "n8n").length} n8n records are visible in the dashboard.`,
       recordCount: params.mergedSignals.filter((signal) => signal.sourceSystem === "n8n").length,
       readOnly: true,

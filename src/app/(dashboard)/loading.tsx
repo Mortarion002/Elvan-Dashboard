@@ -7,7 +7,7 @@ export default function DashboardLoading() {
         <div>
           <h1 className={styles.pageTitle}>Loading dashboard</h1>
           <div className={styles.pageSub}>
-            Pulling the latest mirrored signals from Neon and Notion.
+            Pulling the latest operational signals from Neon.
           </div>
         </div>
       </div>
@@ -17,7 +17,7 @@ export default function DashboardLoading() {
           <div className={styles.statCard} key={index}>
             <div className={styles.statValue}>...</div>
             <div className={styles.statLabel}>Refreshing</div>
-            <div className={styles.statMeta}>Reading the parallel channel.</div>
+            <div className={styles.statMeta}>Reading the shared signal store.</div>
           </div>
         ))}
       </div>

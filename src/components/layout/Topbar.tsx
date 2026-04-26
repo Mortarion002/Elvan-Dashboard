@@ -22,7 +22,7 @@ export function Topbar({ statusSummary, coverage, channelStatuses }: TopbarProps
           <span className={`${styles.modeDot} ${styles[statusSummary.mode]}`}></span>
           {statusSummary.label}
         </div>
-        <div className={styles.title}>Read-only bridge across X_Post, n8n, Neon, and Notion</div>
+        <div className={styles.title}>Read-only bridge across X_Post, n8n, Reddit, and Neon</div>
         <div className={styles.meta}>
           <span>Last signal {statusSummary.lastSignalLabel}</span>
           <span>Last workflow {statusSummary.lastWorkflowLabel}</span>

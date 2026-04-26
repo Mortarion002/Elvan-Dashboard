@@ -12,8 +12,8 @@ At Elvan, we had multiple AI workflows running in parallel:
 
 - X / Reddit research bot
 - n8n pipelines scanning Hacker News and Product Hunt
-- Notion as the primary signal store
-- Neon as an analytics mirror
+- Neon as the primary shared signal store
+- Notion as an optional weekly report archive
 
 Each system worked independently.
 
@@ -64,12 +64,12 @@ Three independent systems:
 
 - Scrapes Hacker News + Product Hunt
 - Enriches signals with LLMs
-- Stores in Notion (source of truth)
-- Mirrors to Neon
+- Stores scored signals in Neon
+- Uses Neon as the handoff for alerting and reports
 
 ### 3. Dashboard (this repo)
 
-- Reads from Neon + Notion
+- Reads from Neon plus optional Notion weekly reports
 - Aggregates data into UI
 - Never writes to upstream systems
 
@@ -84,8 +84,8 @@ Three independent systems:
 
 - Next.js (App Router)
 - React 19 + TypeScript
-- Neon Postgres (analytics layer)
-- Notion API (primary workflow datastore)
+- Neon Postgres (operational signal layer)
+- Notion API (optional weekly reports and legacy archive)
 
 ---
 
@@ -124,6 +124,7 @@ Setup `.env.local`:
 ```env
 NEON_DATABASE_URL=
 NOTION_API_KEY=
+ENABLE_LEGACY_NOTION_SIGNALS=false
 NOTION_DB_ID=
 NOTION_WEEKLY_DB_ID=
 ```
@@ -134,8 +135,8 @@ NOTION_WEEKLY_DB_ID=
 
 - **Read-only architecture** → no risk to upstream systems
 - **Fail-open data model** → workflows don’t depend on dashboard
-- **Neon as shared analytics layer** → decouples UI from execution
-- **Notion as source of truth** → keeps workflows stable
+- **Neon as shared operational layer** → decouples UI from execution
+- **Notion as optional report/archive layer** → preserves weekly summaries without driving alerts
 
 ---
 

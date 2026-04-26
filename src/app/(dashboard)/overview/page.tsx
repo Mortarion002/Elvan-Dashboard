@@ -24,8 +24,8 @@ export default async function OverviewPage() {
         <div>
           <h1 className={viewStyles.pageTitle}>Overview</h1>
           <div className={viewStyles.pageSub}>
-            Live read-only aggregation across X/Post, Reddit, Hacker News, Product Hunt, Neon, and
-            Notion. The dashboard consumes the parallel channel and does not modify source systems.
+            Live read-only aggregation across X/Post, Reddit, Hacker News, Product Hunt, and the
+            shared Neon signal store. The dashboard does not modify source systems.
           </div>
         </div>
         <div className={viewStyles.actions}>
@@ -155,13 +155,13 @@ export default async function OverviewPage() {
               <div>
                 <h3 className={overviewStyles.cardTitle}>Channel coverage</h3>
                 <div className={overviewStyles.cardSub}>
-                  How the dashboard is merging the parallel channel today.
+                  How the dashboard is reading the shared operational store today.
                 </div>
               </div>
             </div>
             <div className={overviewStyles.coverageGrid}>
               <div className={overviewStyles.coverageItem}>
-                <span>Mirrored in Neon + Notion</span>
+                <span>Neon + legacy archive</span>
                 <strong>{data.coverage.mirroredSignals}</strong>
               </div>
               <div className={overviewStyles.coverageItem}>
@@ -169,7 +169,7 @@ export default async function OverviewPage() {
                 <strong>{data.coverage.neonOnlySignals}</strong>
               </div>
               <div className={overviewStyles.coverageItem}>
-                <span>Notion only</span>
+                <span>Legacy archive only</span>
                 <strong>{data.coverage.notionOnlySignals}</strong>
               </div>
               <div className={overviewStyles.coverageItem}>
