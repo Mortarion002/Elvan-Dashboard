@@ -827,19 +827,27 @@ function buildTrendData(signals: UnifiedSignal[]): TrendDatum[] {
     weekday: "short",
     timeZone: DASHBOARD_TIMEZONE,
   });
+  const dayKeyFormat = new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: DASHBOARD_TIMEZONE,
+  });
   const buckets = Array.from({ length: 7 }, (_, index) => {
     const day = new Date(now);
     day.setHours(0, 0, 0, 0);
     day.setDate(day.getDate() - (6 - index));
     return {
       label: dayFormat.format(day),
+      key: dayKeyFormat.format(day),
       day,
       count: 0,
     };
   });
+  const bucketsByDay = new Map(buckets.map((bucket) => [bucket.key, bucket]));
 
   for (const signal of signals) {
-    const target = buckets.find((bucket) => isSameDay(bucket.day, signal.lastSeenAt));
+    const target = bucketsByDay.get(dayKeyFormat.format(signal.lastSeenAt));
     if (target) {
       target.count += 1;
     }
@@ -1995,14 +2003,6 @@ function formatDuration(startedAt: Date, finishedAt: Date | null): string {
     return `${minutes}m`;
   }
   return `${minutes}m ${remainingSeconds}s`;
-}
-
-function isSameDay(left: Date, right: Date): boolean {
-  return (
-    left.getFullYear() === right.getFullYear() &&
-    left.getMonth() === right.getMonth() &&
-    left.getDate() === right.getDate()
-  );
 }
 
 function parseDateValue(value: string | null): Date | null {
