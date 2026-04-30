@@ -1248,7 +1248,7 @@ function mapNeonRowToSignal(row: NeonSignalRow): UnifiedSignal | null {
     hotLead: Boolean(row.hot_lead) || normalizePriority(row.priority) === "hot",
     occurredAt,
     lastSeenAt: occurredAt,
-    url: row.url ?? "",
+    url: normalizeSignalUrl(source, row.url),
     author: row.author,
     subreddit: row.subreddit,
     matchedKeyword: row.matched_keyword,
@@ -1318,7 +1318,7 @@ function mapNotionPageToSignal(page: Record<string, unknown>): UnifiedSignal | n
     hotLead: score >= 7,
     occurredAt,
     lastSeenAt: occurredAt,
-    url: readNotionUrl(props["URL"]) || "",
+    url: normalizeSignalUrl(source, readNotionUrl(props["URL"])),
     author: null,
     subreddit: readNotionRichText(props["Subreddit"]) || null,
     matchedKeyword: null,
@@ -1688,6 +1688,33 @@ function normalizeUrlForKey(url: string): string {
   } catch {
     return url.trim().toLowerCase().replace(/\/+$/, "");
   }
+}
+
+function normalizeSignalUrl(source: SignalSource, value: string | null | undefined): string {
+  const url = String(value ?? "").trim();
+  if (!url) {
+    return "";
+  }
+
+  if (source !== "x") {
+    return url;
+  }
+
+  try {
+    const parsed = new URL(url);
+    const isXHost = parsed.hostname === "x.com" || parsed.hostname === "twitter.com";
+    const parts = parsed.pathname.split("/").filter(Boolean);
+    const statusIndex = parts.indexOf("status");
+    const postId = statusIndex >= 0 ? parts[statusIndex + 1] : "";
+
+    if (isXHost && statusIndex > 0 && /^\d+$/.test(postId)) {
+      return url;
+    }
+  } catch {
+    return "";
+  }
+
+  return "";
 }
 
 function normalizeSource(value: string | null | undefined): SignalSource | null {
