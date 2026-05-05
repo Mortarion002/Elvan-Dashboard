@@ -12,6 +12,52 @@ export type SourceMeta = {
   accent: string;
 };
 
+const ARCHIVED_NEON_KINDS = new Set(["notion_backfill"]);
+
+const ELVAN_RELEVANCE_TERMS = [
+  "churn",
+  "customer feedback",
+  "product feedback",
+  "voice of customer",
+  "voc",
+  "nps",
+  "net promoter",
+  "customer satisfaction",
+  "satisfaction survey",
+  "survey tool",
+  "survey licensing",
+  "response rate",
+  "support ticket",
+  "support backlog",
+  "customer service software",
+  "feedback tool",
+  "feedback widget",
+  "in-app customer feedback",
+  "onboarding churn",
+  "typeform alternative",
+  "qualtrics",
+  "medallia",
+  "survicate",
+  "hotjar",
+  "uservoice",
+  "intercom alternative",
+  "zendesk",
+  "delighted alternative",
+  "replacing delighted",
+];
+
+const IRRELEVANT_TERMS = [
+  "magic: the gathering",
+  "nft community",
+  "gift card",
+  "parliamentary",
+  "upsc",
+  "fish identifier",
+  "fishermen",
+  "mental health",
+  "from a gp",
+];
+
 export type SourceInboxRecord = {
   id: string;
   title: string;
@@ -105,9 +151,11 @@ export function getSourceMeta(source: SignalSource): SourceMeta {
 }
 
 export function getSourceCounts(data: DashboardData): Record<SignalSource, number> {
+  const relevantSignals = getRelevantNeonSignals(data);
+
   return SOURCE_SECTIONS.reduce(
     (counts, section) => {
-      counts[section.source] = data.signals.filter(
+      counts[section.source] = relevantSignals.filter(
         (signal) => signal.source === section.source
       ).length;
       return counts;
@@ -121,7 +169,7 @@ export function buildSourcePageView(
   source: SignalSource
 ): SourcePageView {
   const meta = getSourceMeta(source);
-  const sourceRecords = data.signals
+  const sourceRecords = getRelevantNeonSignals(data)
     .filter((signal) => signal.source === source)
     .sort((left, right) => right.lastSeenAt.getTime() - left.lastSeenAt.getTime());
   const records = sourceRecords.map((signal) => serializeSignal(signal, meta));
@@ -137,6 +185,30 @@ export function buildSourcePageView(
       draftCoverage: Math.round((draftCount / Math.max(records.length, 1)) * 100),
     },
   };
+}
+
+function getRelevantNeonSignals(data: DashboardData): UnifiedSignal[] {
+  return data.signals.filter(
+    (signal) => signal.origins.includes("neon") && isElvanRelevantSignal(signal)
+  );
+}
+
+function isElvanRelevantSignal(signal: UnifiedSignal): boolean {
+  const metadataKind = String(signal.metadata.kind ?? "").trim().toLowerCase();
+  if (ARCHIVED_NEON_KINDS.has(metadataKind)) {
+    return false;
+  }
+
+  const title = signal.title.toLowerCase();
+  const keyword = String(signal.matchedKeyword ?? "").toLowerCase();
+  const tool = signal.tool.toLowerCase();
+  const relevanceText = `${title} ${keyword} ${tool}`;
+
+  if (IRRELEVANT_TERMS.some((term) => relevanceText.includes(term))) {
+    return false;
+  }
+
+  return ELVAN_RELEVANCE_TERMS.some((term) => relevanceText.includes(term));
 }
 
 function serializeSignal(signal: UnifiedSignal, meta: SourceMeta): SourceInboxRecord {

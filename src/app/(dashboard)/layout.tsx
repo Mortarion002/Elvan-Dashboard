@@ -18,10 +18,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         mode={data.statusSummary.mode}
       />
       <div className={styles.main}>
-        <Topbar
-          statusSummary={data.statusSummary}
-          coverage={data.coverage}
-        />
+        <Topbar />
         {children}
       </div>
     </div>

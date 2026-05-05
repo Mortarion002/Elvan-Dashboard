@@ -17,12 +17,6 @@ import styles from "./SourceInbox.module.css";
 
 type SourceInboxProps = {
   view: SourcePageView;
-  statusSummary: {
-    mode: "live" | "partial" | "fallback";
-    label: string;
-    lastSignalLabel: string;
-    warnings: string[];
-  };
 };
 
 type UrgencyFilter = "all" | "high" | "mid" | "low";
@@ -35,7 +29,7 @@ const urgencyRank: Record<string, number> = {
   low: 1,
 };
 
-export function SourceInbox({ view, statusSummary }: SourceInboxProps) {
+export function SourceInbox({ view }: SourceInboxProps) {
   const [query, setQuery] = useState("");
   const [urgency, setUrgency] = useState<UrgencyFilter>("all");
   const [intent, setIntent] = useState<IntentFilter>("all");
@@ -69,7 +63,6 @@ export function SourceInbox({ view, statusSummary }: SourceInboxProps) {
     <main className={styles.content}>
       <section className={styles.hero}>
         <div>
-          <div className={styles.breadcrumb}>Elvan Signal Console &gt; {view.meta.label}</div>
           <div className={styles.titleRow}>
             <span className={styles.sourceMark} style={{ "--accent": view.meta.accent } as CSSProperties}>
               {view.meta.shortLabel}
@@ -78,23 +71,7 @@ export function SourceInbox({ view, statusSummary }: SourceInboxProps) {
           </div>
           <p>{view.meta.description}</p>
         </div>
-        <div className={styles.modeCard}>
-          <span className={`${styles.modeDot} ${styles[statusSummary.mode]}`} />
-          <div>
-            <strong>{statusSummary.label}</strong>
-            <span>{statusSummary.lastSignalLabel}</span>
-          </div>
-        </div>
       </section>
-
-      {statusSummary.warnings.length ? (
-        <section className={styles.warningPanel}>
-          <strong>Operational notes</strong>
-          {statusSummary.warnings.map((warning) => (
-            <span key={warning}>{warning}</span>
-          ))}
-        </section>
-      ) : null}
 
       <section className={styles.metrics} aria-label={`${view.meta.label} summary`}>
         <MetricCard icon={<Inbox />} label="Messages" value={view.totals.messages} />

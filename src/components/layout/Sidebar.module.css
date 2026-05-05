@@ -8,37 +8,72 @@
   padding: 20px 16px;
   border-right: 1px solid var(--border);
   background: var(--sidebar-bg);
+  transition: padding 0.2s ease;
 }
 
 .brand {
+  min-height: 50px;
   display: flex;
   align-items: center;
   gap: 12px;
-  min-height: 48px;
+  position: relative;
 }
 
-.logoMark {
-  width: 44px;
-  height: 44px;
+.brandIcon {
+  width: 42px;
+  height: 42px;
   display: grid;
   place-items: center;
+  flex: 0 0 42px;
+  overflow: hidden;
+  border: 1px solid var(--border);
   border-radius: 10px;
-  background: var(--text);
-  color: var(--app-bg);
-  font-size: 18px;
-  font-weight: 900;
+  background: var(--surface);
 }
 
-.logoText {
-  font-size: 18px;
-  font-weight: 800;
+.logoWrap {
+  width: 132px;
+  height: 26px;
+  display: grid;
+  align-items: center;
+  overflow: hidden;
+  transition: opacity 0.18s ease, width 0.2s ease;
 }
 
-.logoSub {
-  margin-top: 2px;
+.themeAsset,
+.logoImage {
+  grid-area: 1 / 1;
+  width: auto;
+  object-fit: contain;
+}
+
+.assetForDark {
+  display: none;
+}
+
+:global(:root[data-theme="dark"]) .assetForLight {
+  display: none;
+}
+
+:global(:root[data-theme="dark"]) .assetForDark {
+  display: block;
+}
+
+.collapseButton {
+  height: 40px;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
   color: var(--muted);
-  font-family: var(--mono);
-  font-size: 11px;
+}
+
+.collapseButton:hover {
+  color: var(--text);
+  background: var(--surface-muted);
 }
 
 .liveCard {
@@ -46,6 +81,7 @@
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--surface);
+  transition: opacity 0.18s ease, transform 0.2s ease;
 }
 
 .liveTitle {
@@ -111,6 +147,7 @@
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  transition: opacity 0.18s ease;
 }
 
 .navItem {
@@ -156,28 +193,35 @@
   color: var(--nav-active-fg);
 }
 
-.footer {
-  margin-top: auto;
-  padding: 16px 8px 4px;
-  border-top: 1px solid var(--border);
+.collapsed {
+  padding-inline: 13px;
 }
 
-.footer span,
-.footer strong {
-  display: block;
+.collapsed .brand {
+  justify-content: center;
 }
 
-.footer span {
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.collapsed .logoWrap,
+.collapsed .liveCard,
+.collapsed .navLabel,
+.collapsed .navItem span,
+.collapsed .navItem strong {
+  display: none;
 }
 
-.footer strong {
-  margin-top: 6px;
-  font-size: 13px;
+.collapsed .navItem {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme])) .assetForLight {
+    display: none;
+  }
+
+  :global(:root:not([data-theme])) .assetForDark {
+    display: block;
+  }
 }
 
 @media (max-width: 980px) {
@@ -188,14 +232,14 @@
     border-bottom: 1px solid var(--border);
   }
 
-  .nav {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+  .collapseButton,
+  .liveCard,
+  .navLabel {
+    display: none;
   }
 
-  .navLabel,
-  .liveCard,
-  .footer {
-    display: none;
+  .nav {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .navItem {

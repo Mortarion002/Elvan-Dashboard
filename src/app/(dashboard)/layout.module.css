@@ -4,12 +4,17 @@
   grid-template-columns: 272px minmax(0, 1fr);
   background: var(--app-bg);
   color: var(--text);
+  transition: grid-template-columns 0.2s ease;
 }
 
 .main {
   min-width: 0;
   display: flex;
   flex-direction: column;
+}
+
+:global(html[data-sidebar="collapsed"]) .app {
+  grid-template-columns: 72px minmax(0, 1fr);
 }
 
 @media (max-width: 980px) {

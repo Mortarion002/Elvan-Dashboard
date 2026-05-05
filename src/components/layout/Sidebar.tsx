@@ -1,8 +1,17 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Hash, MessageCircle, PackageOpen, RadioTower } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  Hash,
+  MessageCircle,
+  PackageOpen,
+  PanelLeftClose,
+  PanelLeftOpen,
+  RadioTower,
+} from "lucide-react";
 
 import type { DashboardMode } from "@/lib/dashboardData";
 import { SOURCE_SECTIONS } from "@/lib/sourceViews";
@@ -23,16 +32,60 @@ const iconMap = {
 
 export function Sidebar({ sourceCounts, mode }: SidebarProps) {
   const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.dataset.sidebar = collapsed ? "collapsed" : "expanded";
+  }, [collapsed]);
 
   return (
-    <aside className={styles.sidebar}>
+    <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ""}`}>
       <div className={styles.brand}>
-        <div className={styles.logoMark}>E</div>
-        <div>
-          <div className={styles.logoText}>Elvan</div>
-          <div className={styles.logoSub}>Signal Console</div>
+        <div className={styles.brandIcon}>
+          <Image
+            src="/brand/elvan-icon-dark.png"
+            width={34}
+            height={34}
+            alt=""
+            className={`${styles.themeAsset} ${styles.assetForLight}`}
+          />
+          <Image
+            src="/brand/elvan-icon-light.png"
+            width={34}
+            height={34}
+            alt=""
+            className={`${styles.themeAsset} ${styles.assetForDark}`}
+          />
+        </div>
+        <div className={styles.logoWrap}>
+          <Image
+            src="/brand/elvan-logo-dark.png"
+            width={132}
+            height={26}
+            alt="Elvan"
+            className={`${styles.logoImage} ${styles.assetForLight}`}
+            priority
+          />
+          <Image
+            src="/brand/elvan-logo-light.png"
+            width={132}
+            height={26}
+            alt="Elvan"
+            className={`${styles.logoImage} ${styles.assetForDark}`}
+            priority
+          />
         </div>
       </div>
+
+      <button
+        type="button"
+        className={styles.collapseButton}
+        onClick={() => setCollapsed((current) => !current)}
+        aria-label={collapsed ? "Show sidebar" : "Hide sidebar"}
+        title={collapsed ? "Show sidebar" : "Hide sidebar"}
+      >
+        {collapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
+      </button>
 
       <div className={styles.liveCard}>
         <div className={styles.liveTitle}>
@@ -71,11 +124,6 @@ export function Sidebar({ sourceCounts, mode }: SidebarProps) {
           );
         })}
       </nav>
-
-      <div className={styles.footer}>
-        <span>Read-only</span>
-        <strong>Neon + archive</strong>
-      </div>
     </aside>
   );
 }
