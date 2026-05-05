@@ -60,11 +60,13 @@
 }
 
 .collapseButton {
+  width: 40px;
   height: 40px;
-  width: 100%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  align-self: flex-start;
+  margin-top: auto;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--surface);
@@ -212,6 +214,10 @@
 .collapsed .navItem {
   justify-content: center;
   padding-inline: 0;
+}
+
+.collapsed .collapseButton {
+  align-self: center;
 }
 
 @media (prefers-color-scheme: dark) {

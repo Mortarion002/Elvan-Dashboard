@@ -77,16 +77,6 @@ export function Sidebar({ sourceCounts, mode }: SidebarProps) {
         </div>
       </div>
 
-      <button
-        type="button"
-        className={styles.collapseButton}
-        onClick={() => setCollapsed((current) => !current)}
-        aria-label={collapsed ? "Show sidebar" : "Hide sidebar"}
-        title={collapsed ? "Show sidebar" : "Hide sidebar"}
-      >
-        {collapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
-      </button>
-
       <div className={styles.liveCard}>
         <div className={styles.liveTitle}>
           <span className={`${styles.modeDot} ${styles[mode]}`} />
@@ -124,6 +114,16 @@ export function Sidebar({ sourceCounts, mode }: SidebarProps) {
           );
         })}
       </nav>
+
+      <button
+        type="button"
+        className={styles.collapseButton}
+        onClick={() => setCollapsed((current) => !current)}
+        aria-label={collapsed ? "Show sidebar" : "Hide sidebar"}
+        title={collapsed ? "Show sidebar" : "Hide sidebar"}
+      >
+        {collapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
+      </button>
     </aside>
   );
 }
