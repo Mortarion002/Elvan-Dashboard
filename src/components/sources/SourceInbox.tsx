@@ -9,7 +9,6 @@ import {
   Flame,
   Inbox,
   MessageSquareText,
-  Search,
 } from "lucide-react";
 
 import type { SourceInboxRecord, SourcePageView } from "@/lib/sourceViews";
@@ -19,8 +18,6 @@ type SourceInboxProps = {
   view: SourcePageView;
 };
 
-type UrgencyFilter = "all" | "high" | "mid" | "low";
-type IntentFilter = "all" | "Buying" | "Comparing" | "Venting" | "Learning";
 type SortMode = "newest" | "score" | "urgency";
 
 const urgencyRank: Record<string, number> = {
@@ -30,34 +27,20 @@ const urgencyRank: Record<string, number> = {
 };
 
 export function SourceInbox({ view }: SourceInboxProps) {
-  const [query, setQuery] = useState("");
-  const [urgency, setUrgency] = useState<UrgencyFilter>("all");
-  const [intent, setIntent] = useState<IntentFilter>("all");
   const [sortMode, setSortMode] = useState<SortMode>("newest");
 
   const filteredRecords = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-
-    return view.records
-      .filter((record) => {
-        const matchesQuery = normalizedQuery
-          ? record.searchText.includes(normalizedQuery)
-          : true;
-        const matchesUrgency = urgency === "all" ? true : record.urgency === urgency;
-        const matchesIntent = intent === "all" ? true : record.intent === intent;
-        return matchesQuery && matchesUrgency && matchesIntent;
-      })
-      .sort((left, right) => {
-        if (sortMode === "score") {
-          return right.score - left.score;
-        }
-        if (sortMode === "urgency") {
-          const urgencyDelta = urgencyRank[right.urgency] - urgencyRank[left.urgency];
-          return urgencyDelta || right.score - left.score;
-        }
-        return new Date(right.lastSeenAtIso).getTime() - new Date(left.lastSeenAtIso).getTime();
-      });
-  }, [intent, query, sortMode, urgency, view.records]);
+    return [...view.records].sort((left, right) => {
+      if (sortMode === "score") {
+        return right.score - left.score;
+      }
+      if (sortMode === "urgency") {
+        const urgencyDelta = urgencyRank[right.urgency] - urgencyRank[left.urgency];
+        return urgencyDelta || right.score - left.score;
+      }
+      return new Date(right.lastSeenAtIso).getTime() - new Date(left.lastSeenAtIso).getTime();
+    });
+  }, [sortMode, view.records]);
 
   return (
     <main className={styles.content}>
@@ -89,54 +72,21 @@ export function SourceInbox({ view }: SourceInboxProps) {
           <div>
             <h2>Message Inbox</h2>
             <p>
-              Showing {filteredRecords.length} of {view.records.length} messages from{" "}
-              {view.meta.label}.
+              Showing {view.records.length} messages from {view.meta.label}.
             </p>
           </div>
-          <div className={styles.sortWrap}>
+          <button
+            type="button"
+            className={styles.sortButton}
+            aria-label="Toggle sort order"
+            onClick={() =>
+              setSortMode((current) =>
+                current === "newest" ? "urgency" : current === "urgency" ? "score" : "newest"
+              )
+            }
+          >
             <ArrowDownUp size={16} aria-hidden="true" />
-            <select
-              aria-label="Sort messages"
-              value={sortMode}
-              onChange={(event) => setSortMode(event.target.value as SortMode)}
-            >
-              <option value="newest">Newest first</option>
-              <option value="score">Highest score</option>
-              <option value="urgency">Urgency first</option>
-            </select>
-          </div>
-        </div>
-
-        <div className={styles.toolbar}>
-          <label className={styles.searchBox}>
-            <Search size={18} aria-hidden="true" />
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search title, author, keyword, tool, pain point, draft..."
-            />
-          </label>
-          <select
-            aria-label="Filter by urgency"
-            value={urgency}
-            onChange={(event) => setUrgency(event.target.value as UrgencyFilter)}
-          >
-            <option value="all">Urgency: All</option>
-            <option value="high">High</option>
-            <option value="mid">Medium</option>
-            <option value="low">Low</option>
-          </select>
-          <select
-            aria-label="Filter by intent"
-            value={intent}
-            onChange={(event) => setIntent(event.target.value as IntentFilter)}
-          >
-            <option value="all">Intent: All</option>
-            <option value="Buying">Buying</option>
-            <option value="Comparing">Comparing</option>
-            <option value="Venting">Venting</option>
-            <option value="Learning">Learning</option>
-          </select>
+          </button>
         </div>
 
         <div className={styles.records}>
@@ -147,8 +97,7 @@ export function SourceInbox({ view }: SourceInboxProps) {
           ) : (
             <div className={styles.emptyState}>
               <Inbox size={26} aria-hidden="true" />
-              <strong>No messages match these filters.</strong>
-              <span>Try another search, urgency, or intent filter.</span>
+              <strong>No messages yet.</strong>
             </div>
           )}
         </div>
