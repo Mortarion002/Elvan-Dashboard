@@ -117,14 +117,6 @@ export const SOURCE_SECTIONS: SourceMeta[] = [
     accent: "#ff4500",
   },
   {
-    source: "x",
-    slug: "x",
-    label: "X",
-    shortLabel: "X",
-    description: "Social buying signals and competitor mentions captured from X.",
-    accent: "#111111",
-  },
-  {
     source: "ph",
     slug: "product-hunt",
     label: "Product Hunt",
@@ -139,6 +131,14 @@ export const SOURCE_SECTIONS: SourceMeta[] = [
     shortLabel: "H",
     description: "Founder, developer, and technical buyer conversations from Hacker News.",
     accent: "#ff6600",
+  },
+  {
+    source: "x",
+    slug: "x",
+    label: "X",
+    shortLabel: "X",
+    description: "Social buying signals and competitor mentions captured from X.",
+    accent: "#111111",
   },
 ];
 

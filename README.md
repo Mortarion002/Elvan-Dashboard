@@ -1,31 +1,21 @@
 # Elvan Signal Bot Dashboard
 
-Live: https://elvan-dashboard.vercel.app/
+Live: [elvan-dashboard.vercel.app](https://elvan-dashboard.vercel.app/)
 
-A unified observability and intelligence layer for multiple production AI systems.
+A unified observability layer for multiple production AI signal systems.
 
 ---
 
 ## Why this exists
 
-At Elvan, we had multiple AI workflows running in parallel:
+At Elvan, multiple AI workflows run in parallel:
 
-- X / Reddit research bot
+- Reddit and X research bots scoring buying signals
 - n8n pipelines scanning Hacker News and Product Hunt
 - Neon as the primary shared signal store
 - Notion as an optional weekly report archive
 
-Each system worked independently.
-
-The problem:
-There was no single place to understand what was happening.
-
-No visibility into:
-
-- what signals were being generated
-- which workflows were healthy
-- where leads were coming from
-- whether systems were silently failing
+Each system worked independently with no single place to understand what was happening — no visibility into what signals were being generated, where leads came from, or whether systems were silently failing.
 
 This dashboard solves that.
 
@@ -33,50 +23,51 @@ This dashboard solves that.
 
 ## What it does
 
-This is a read-only aggregation layer that brings all AI workflows into one operator-facing interface.
+A read-only aggregation layer that brings all AI workflows into one operator-facing interface.
 
-It provides:
+**Four source inboxes:**
 
-- **Unified signal feed** across X, Reddit, HN, Product Hunt
-- **Hot lead detection** with prioritization
-- **Workflow observability (partial, via mirrored data)**
-- **Alert tracking and state**
-- **Competitor and signal intelligence views**
+- Reddit
+- Product Hunt
+- Hacker News
+- X
 
-The key idea:
+Each inbox shows the signals captured from that source with per-signal detail: post content, Elvan angle, and reply draft.
 
-> keep all systems independent, but give humans one place to reason about them
+**Dashboard features:**
+
+- Per-source signal counts with live mode indicator
+- Source inbox views with full signal records
+- Hot lead detection and prioritization
+- Competitor intelligence views
+- 15-second data cache for near-real-time refresh
 
 ---
 
 ## System Architecture
 
-Three independent systems:
+Three independent systems feed into the dashboard:
 
-### 1. X_Post Bot (Python)
+### 1. X / Reddit Bot (Python)
 
-- Scans X and Reddit
+- Scans X and Reddit for buying signals
 - Scores relevance using LLMs
 - Sends Telegram digests
 - Mirrors results to Neon
 
 ### 2. n8n Signal Pipeline
 
-- Scrapes Hacker News + Product Hunt
+- Scrapes Hacker News and Product Hunt
 - Enriches signals with LLMs
 - Stores scored signals in Neon
-- Uses Neon as the handoff for alerting and reports
 
 ### 3. Dashboard (this repo)
 
-- Reads from Neon plus optional Notion weekly reports
-- Aggregates data into UI
+- Reads from Neon (primary) and optional Notion weekly reports
+- Aggregates all sources into one UI
 - Never writes to upstream systems
 
-**Design principle:**
-
-- operational systems stay decoupled
-- dashboard is purely observational
+**Design principle:** operational systems stay fully decoupled — the dashboard is purely observational.
 
 ---
 
@@ -84,31 +75,8 @@ Three independent systems:
 
 - Next.js (App Router)
 - React 19 + TypeScript
-- Neon Postgres (operational signal layer)
-- Notion API (optional weekly reports and legacy archive)
-
----
-
-## AI-first development workflow
-
-This project was built using AI agents as the primary development environment:
-
-- Architecture → Gemini
-- UI mockups → Google Stitch
-- Design iteration → Claude Design
-- Implementation → Claude Code + Codex
-
-AI handled:
-
-- scaffolding
-- repetitive logic
-- UI structure
-
-I handled:
-
-- system design
-- correctness
-- architecture decisions
+- Neon Postgres (primary signal store via `@neondatabase/serverless`)
+- Notion API (optional weekly reports and legacy signal archive)
 
 ---
 
@@ -119,40 +87,31 @@ npm install
 npm run dev
 ```
 
-Setup `.env.local`:
+Create `.env.local`:
 
 ```env
 NEON_DATABASE_URL=
 NOTION_API_KEY=
-ENABLE_LEGACY_NOTION_SIGNALS=false
 NOTION_DB_ID=
 NOTION_WEEKLY_DB_ID=
+ENABLE_LEGACY_NOTION_SIGNALS=false
 ```
+
+`ENABLE_LEGACY_NOTION_SIGNALS` controls whether old Notion-sourced signals are included alongside Neon data. Set to `false` unless you need the archive.
 
 ---
 
 ## Key Design Decisions
 
-- **Read-only architecture** → no risk to upstream systems
-- **Fail-open data model** → workflows don’t depend on dashboard
-- **Neon as shared operational layer** → decouples UI from execution
-- **Notion as optional report/archive layer** → preserves weekly summaries without driving alerts
-
----
-
-## What I’d improve next
-
-Add a workflow heartbeat system:
-
-- each workflow logs execution status (success/failure/latency)
-- dashboard surfaces real-time health
-- alerts trigger on missed runs
-
-This would turn the dashboard into a full observability system.
+- **Read-only architecture** — no risk to upstream systems
+- **Fail-open data model** — workflows don't depend on the dashboard being up
+- **Neon as shared operational layer** — decouples UI from execution environment
+- **Notion as optional archive layer** — preserves weekly summaries without driving alerts
+- **15s cache** — balances freshness with Neon connection overhead
 
 ---
 
 ## Author
 
 Aman Kumar
-https://amankumar002u.tech
+[amankumar002u.tech](https://amankumar002u.tech)

@@ -31,13 +31,12 @@
   background: var(--surface);
 }
 
-.logoWrap {
-  width: 132px;
-  height: 26px;
-  display: grid;
-  align-items: center;
-  overflow: hidden;
-  transition: opacity 0.18s ease, width 0.2s ease;
+.brandName {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  transition: opacity 0.18s ease;
 }
 
 .themeAsset,
@@ -203,7 +202,7 @@
   justify-content: center;
 }
 
-.collapsed .logoWrap,
+.collapsed .brandName,
 .collapsed .liveCard,
 .collapsed .navLabel,
 .collapsed .navItem span,

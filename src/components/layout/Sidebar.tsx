@@ -46,35 +46,18 @@ export function Sidebar({ sourceCounts, mode }: SidebarProps) {
             src="/brand/elvan-icon-dark.png"
             width={34}
             height={34}
-            alt=""
+            alt="Elvan"
             className={`${styles.themeAsset} ${styles.assetForLight}`}
           />
           <Image
             src="/brand/elvan-icon-light.png"
             width={34}
             height={34}
-            alt=""
+            alt="Elvan"
             className={`${styles.themeAsset} ${styles.assetForDark}`}
           />
         </div>
-        <div className={styles.logoWrap}>
-          <Image
-            src="/brand/elvan-logo-dark.png"
-            width={132}
-            height={26}
-            alt="Elvan"
-            className={`${styles.logoImage} ${styles.assetForLight}`}
-            priority
-          />
-          <Image
-            src="/brand/elvan-logo-light.png"
-            width={132}
-            height={26}
-            alt="Elvan"
-            className={`${styles.logoImage} ${styles.assetForDark}`}
-            priority
-          />
-        </div>
+        <span className={styles.brandName}>Elvan</span>
       </div>
 
       <div className={styles.liveCard}>
