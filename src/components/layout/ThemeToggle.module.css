@@ -1,0 +1,50 @@
+.toggle {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-soft);
+}
+
+.toggle:hover {
+  background: var(--surface-muted);
+}
+
+.sunIcon {
+  display: none;
+}
+
+.moonIcon {
+  display: block;
+}
+
+:global(:root[data-theme="dark"]) .sunIcon {
+  display: block;
+}
+
+:global(:root[data-theme="dark"]) .moonIcon {
+  display: none;
+}
+
+:global(:root[data-theme="light"]) .sunIcon {
+  display: none;
+}
+
+:global(:root[data-theme="light"]) .moonIcon {
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme])) .sunIcon {
+    display: block;
+  }
+
+  :global(:root:not([data-theme])) .moonIcon {
+    display: none;
+  }
+}
