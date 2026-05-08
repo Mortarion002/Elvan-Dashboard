@@ -275,6 +275,11 @@ let dashboardDataCache:
   | null = null;
 let dashboardDataInFlight: Promise<DashboardData> | null = null;
 
+export function invalidateDashboardCache(): void {
+  dashboardDataCache = null;
+  dashboardDataInFlight = null;
+}
+
 type NeonSignalRow = {
   dedupe_key: string;
   source: string;

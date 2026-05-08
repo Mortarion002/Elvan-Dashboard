@@ -1,0 +1,36 @@
+"use server";
+
+import { neon } from "@neondatabase/serverless";
+import { revalidatePath } from "next/cache";
+
+import { invalidateDashboardCache } from "@/lib/dashboardData";
+
+export async function deleteXSignal(id: string): Promise<{ success: boolean; error?: string }> {
+  const connectionString = process.env.NEON_DATABASE_URL;
+  if (!connectionString) {
+    return { success: false, error: "Database not configured" };
+  }
+
+  const sql = neon(connectionString);
+
+  try {
+    const result = await sql`
+      DELETE FROM signal_events
+      WHERE dedupe_key = ${id} AND source = 'x'
+      RETURNING dedupe_key
+    `;
+
+    const rows = result as unknown as Array<{ dedupe_key: string }>;
+    if (!rows.length) {
+      return { success: false, error: "Record not found or not an X post" };
+    }
+
+    invalidateDashboardCache();
+    revalidatePath("/x");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete X signal", error);
+    return { success: false, error: "Delete failed" };
+  }
+}

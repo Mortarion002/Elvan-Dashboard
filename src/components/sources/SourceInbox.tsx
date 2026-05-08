@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import { useMemo, useState, useTransition, type CSSProperties, type ReactNode } from "react";
 import {
   ArrowDownUp,
   Bell,
@@ -9,8 +9,10 @@ import {
   Flame,
   Inbox,
   MessageSquareText,
+  Trash2,
 } from "lucide-react";
 
+import { deleteXSignal } from "@/app/actions";
 import type { SourceInboxRecord, SourcePageView } from "@/lib/sourceViews";
 import styles from "./SourceInbox.module.css";
 
@@ -28,19 +30,28 @@ const urgencyRank: Record<string, number> = {
 
 export function SourceInbox({ view }: SourceInboxProps) {
   const [sortMode, setSortMode] = useState<SortMode>("newest");
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
 
-  const filteredRecords = useMemo(() => {
-    return [...view.records].sort((left, right) => {
-      if (sortMode === "score") {
-        return right.score - left.score;
-      }
-      if (sortMode === "urgency") {
-        const urgencyDelta = urgencyRank[right.urgency] - urgencyRank[left.urgency];
-        return urgencyDelta || right.score - left.score;
-      }
-      return new Date(right.lastSeenAtIso).getTime() - new Date(left.lastSeenAtIso).getTime();
-    });
-  }, [sortMode, view.records]);
+  const isXSource = view.meta.source === "x";
+
+  const visibleRecords = useMemo(() => {
+    return [...view.records]
+      .filter((record) => !deletedIds.has(record.id))
+      .sort((left, right) => {
+        if (sortMode === "score") {
+          return right.score - left.score;
+        }
+        if (sortMode === "urgency") {
+          const urgencyDelta = urgencyRank[right.urgency] - urgencyRank[left.urgency];
+          return urgencyDelta || right.score - left.score;
+        }
+        return new Date(right.lastSeenAtIso).getTime() - new Date(left.lastSeenAtIso).getTime();
+      });
+  }, [sortMode, view.records, deletedIds]);
+
+  function handleDelete(id: string) {
+    setDeletedIds((prev) => new Set([...prev, id]));
+  }
 
   return (
     <main className={styles.content}>
@@ -72,7 +83,7 @@ export function SourceInbox({ view }: SourceInboxProps) {
           <div>
             <h2>Message Inbox</h2>
             <p>
-              Showing {view.records.length} messages from {view.meta.label}.
+              Showing {visibleRecords.length} of {view.records.length} messages from {view.meta.label}.
             </p>
           </div>
           <button
@@ -90,9 +101,15 @@ export function SourceInbox({ view }: SourceInboxProps) {
         </div>
 
         <div className={styles.records}>
-          {filteredRecords.length ? (
-            filteredRecords.map((record) => (
-              <MessageCard key={record.id} record={record} accent={view.meta.accent} />
+          {visibleRecords.length ? (
+            visibleRecords.map((record) => (
+              <MessageCard
+                key={record.id}
+                record={record}
+                accent={view.meta.accent}
+                isXSource={isXSource}
+                onDelete={handleDelete}
+              />
             ))
           ) : (
             <div className={styles.emptyState}>
@@ -126,7 +143,20 @@ function MetricCard({
   );
 }
 
-function MessageCard({ record, accent }: { record: SourceInboxRecord; accent: string }) {
+function MessageCard({
+  record,
+  accent,
+  isXSource,
+  onDelete,
+}: {
+  record: SourceInboxRecord;
+  accent: string;
+  isXSource: boolean;
+  onDelete: (id: string) => void;
+}) {
+  const [confirming, setConfirming] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
   const visibleStats = [
     record.stats.likes !== null ? `Likes ${record.stats.likes}` : null,
     record.stats.replies !== null ? `Replies ${record.stats.replies}` : null,
@@ -134,6 +164,17 @@ function MessageCard({ record, accent }: { record: SourceInboxRecord; accent: st
     record.stats.upvotes !== null ? `Upvotes ${record.stats.upvotes}` : null,
     record.stats.reposts !== null ? `Reposts ${record.stats.reposts}` : null,
   ].filter(Boolean);
+
+  function handleDeleteClick() {
+    if (!confirming) {
+      setConfirming(true);
+      return;
+    }
+    onDelete(record.id);
+    startTransition(async () => {
+      await deleteXSignal(record.id);
+    });
+  }
 
   return (
     <article className={styles.recordCard} style={{ "--accent": accent } as CSSProperties}>
@@ -143,7 +184,43 @@ function MessageCard({ record, accent }: { record: SourceInboxRecord; accent: st
             <h3>{record.title}</h3>
             <p>{record.subtitle}</p>
           </div>
-          <div className={styles.score}>{record.score}</div>
+          <div className={styles.recordHeadRight}>
+            <div className={styles.score}>{record.score}</div>
+            {isXSource && (
+              <div className={styles.deleteWrap}>
+                {confirming ? (
+                  <>
+                    <button
+                      type="button"
+                      className={`${styles.deleteBtn} ${styles.deleteBtnConfirm}`}
+                      onClick={handleDeleteClick}
+                      disabled={isPending}
+                    >
+                      {isPending ? "Deleting…" : "Confirm delete"}
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.deleteBtnCancel}
+                      onClick={() => setConfirming(false)}
+                      disabled={isPending}
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    className={styles.deleteBtn}
+                    onClick={handleDeleteClick}
+                    aria-label="Delete this post"
+                    title="Delete this X post"
+                  >
+                    <Trash2 size={14} aria-hidden="true" />
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className={styles.pills}>

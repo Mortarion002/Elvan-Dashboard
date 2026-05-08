@@ -294,6 +294,68 @@
   line-height: 1.5;
 }
 
+.recordHeadRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.deleteWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.deleteBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.deleteBtn:hover {
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+.deleteBtnConfirm {
+  padding: 6px 10px;
+  color: #fff;
+  background: #ef4444;
+  border-color: #ef4444;
+  font-size: 12px;
+}
+
+.deleteBtnConfirm:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #fff;
+}
+
+.deleteBtnCancel {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.deleteBtnCancel:hover {
+  color: var(--text-primary);
+  border-color: var(--text-muted);
+}
+
 .score {
   width: 54px;
   height: 42px;
