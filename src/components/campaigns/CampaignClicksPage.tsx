@@ -163,7 +163,11 @@ export function CampaignClicksPage() {
       {hasUploads && !hasClickColumns ? (
         <section className={styles.warningPanel}>
           <AlertTriangle size={18} aria-hidden="true" />
-          <span>No click columns were detected. A basic Smartlead lead-list export may not include engagement metrics.</span>
+          <span>
+            No click data was found in the uploaded CSVs. Smartlead lead-list exports can show leads as
+            completed without including engagement fields such as click_count, clicked time, clicked URL, or
+            clicked activity status.
+          </span>
         </section>
       ) : null}
 
@@ -239,7 +243,10 @@ export function CampaignClicksPage() {
         ) : (
           <div className={styles.emptyState}>
             <MousePointerClick size={28} aria-hidden="true" />
-            <strong>{hasUploads ? "No clicked leads found." : "Upload CSVs to see clicked leads."}</strong>
+            <strong>{hasUploads ? "No clicked leads found in this CSV data." : "Upload CSVs to see clicked leads."}</strong>
+            {hasUploads && !hasClickColumns ? (
+              <span>Use a Smartlead export that includes click_count or clicked activity fields.</span>
+            ) : null}
           </div>
         )}
       </section>
