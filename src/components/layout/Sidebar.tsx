@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import {
   Hash,
   MessageCircle,
+  MousePointerClick,
   PackageOpen,
   PanelLeftClose,
   PanelLeftOpen,
@@ -96,6 +97,14 @@ export function Sidebar({ sourceCounts, mode }: SidebarProps) {
             </Link>
           );
         })}
+        <Link
+          href="/campaign-clicks"
+          className={`${styles.navItem} ${pathname === "/campaign-clicks" ? styles.active : ""}`}
+        >
+          <MousePointerClick size={18} aria-hidden="true" />
+          <span>Campaign Clicks</span>
+          <strong>CSV</strong>
+        </Link>
       </nav>
 
       <button
