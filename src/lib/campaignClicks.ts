@@ -25,6 +25,7 @@ export type ClickedLead = {
   sequence: string;
   totalClicks: number;
   campaignCount: number;
+  campaignNames: string[];
   campaigns: string[];
   sourceFiles: string[];
   clickEvidence: string[];
@@ -74,6 +75,7 @@ const SEQUENCE_FIELDS = [
 
 export function summarizeCampaignClicks(uploads: CampaignUpload[]): CampaignClickSummary {
   const headers = uniqueHeaders(uploads.flatMap((upload) => upload.headers));
+  const leadDetailsByEmail = new Map<string, CampaignCsvRow>();
   const accumulators = new Map<string, LeadAccumulator>();
   let totalRows = 0;
   let clickedRows = 0;
@@ -91,27 +93,37 @@ export function summarizeCampaignClicks(uploads: CampaignUpload[]): CampaignClic
     }
 
     upload.rows.forEach((row) => {
+      const rowEmail = normalizeEmail(readField(row, EMAIL_FIELDS));
+      if (rowEmail) {
+        const details = leadDetailsByEmail.get(rowEmail) ?? {};
+        mergeRowDetails(details, row);
+        leadDetailsByEmail.set(rowEmail, details);
+        const clickedLead = accumulators.get(rowEmail);
+        if (clickedLead) {
+          mergeRowDetails(clickedLead.details, row);
+        }
+      }
+
       const clickSignal = getClickSignal(row);
       if (clickSignal.clicks <= 0) {
         return;
       }
 
-      const email = normalizeEmail(readField(row, EMAIL_FIELDS));
-      if (!email) {
+      if (!rowEmail) {
         skippedRowsWithoutEmail += 1;
         return;
       }
 
       clickedRows += 1;
       const existing =
-        accumulators.get(email) ??
+        accumulators.get(rowEmail) ??
         ({
-          email,
+          email: rowEmail,
           totalClicks: 0,
           campaigns: new Map<string, number>(),
           sourceFiles: new Set<string>(),
           clickEvidence: [],
-          details: {},
+          details: { ...(leadDetailsByEmail.get(rowEmail) ?? {}) },
           statuses: new Set<string>(),
           sequences: new Set<string>(),
         } satisfies LeadAccumulator);
@@ -135,15 +147,17 @@ export function summarizeCampaignClicks(uploads: CampaignUpload[]): CampaignClic
         );
       }
 
-      accumulators.set(email, existing);
+      accumulators.set(rowEmail, existing);
     });
   });
 
   const leads = Array.from(accumulators.values())
     .map((lead) => {
-      const campaigns = Array.from(lead.campaigns.entries())
-        .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))
-        .map(([campaignName, clicks]) => `${campaignName} (${clicks})`);
+      const campaignEntries = Array.from(lead.campaigns.entries()).sort(
+        (left, right) => right[1] - left[1] || left[0].localeCompare(right[0])
+      );
+      const campaignNames = campaignEntries.map(([campaignName]) => campaignName);
+      const campaigns = campaignEntries.map(([campaignName, clicks]) => `${campaignName} (${clicks})`);
       const details = lead.details;
       const fullName = buildFullName(details);
 
@@ -160,6 +174,7 @@ export function summarizeCampaignClicks(uploads: CampaignUpload[]): CampaignClic
         sequence: joinSet(lead.sequences),
         totalClicks: lead.totalClicks,
         campaignCount: lead.campaigns.size,
+        campaignNames,
         campaigns,
         sourceFiles: Array.from(lead.sourceFiles).sort(),
         clickEvidence: lead.clickEvidence,
@@ -195,33 +210,15 @@ export function detectClickColumns(headers: string[], rows: CampaignCsvRow[]): s
   });
 }
 
-export function buildClickedLeadsCsv(leads: ClickedLead[], sourceHeaders: string[]): string {
-  const derivedHeaders = [
-    "Canonical Email",
-    "Full Name",
-    "Total Clicks",
-    "Campaign Count",
-    "Campaigns Clicked",
-    "Source Files",
-    "Click Evidence",
-  ];
-  const headers = [...derivedHeaders, ...sourceHeaders.filter((header) => !derivedHeaders.includes(header))];
+export function buildClickedLeadsCsv(leads: ClickedLead[]): string {
+  const headers = ["Lead Name", "Email", "Company Name", "Campaign Name"];
   const rows = leads.map((lead) => {
-    const record: Record<string, string | number> = {
-      "Canonical Email": lead.email,
-      "Full Name": lead.fullName,
-      "Total Clicks": lead.totalClicks,
-      "Campaign Count": lead.campaignCount,
-      "Campaigns Clicked": lead.campaigns.join("; "),
-      "Source Files": lead.sourceFiles.join("; "),
-      "Click Evidence": lead.clickEvidence.join(" | "),
+    return {
+      "Lead Name": lead.fullName,
+      Email: lead.email,
+      "Company Name": lead.company,
+      "Campaign Name": lead.campaignNames.join("; "),
     };
-
-    sourceHeaders.forEach((header) => {
-      record[header] = lead.details[header] ?? "";
-    });
-
-    return record;
   });
   return Papa.unparse(rows, { columns: headers, newline: "\r\n" });
 }

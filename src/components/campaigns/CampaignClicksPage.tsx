@@ -103,7 +103,7 @@ export function CampaignClicksPage() {
       return;
     }
 
-    const csv = buildClickedLeadsCsv(summary.leads, summary.headers);
+    const csv = buildClickedLeadsCsv(summary.leads);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
