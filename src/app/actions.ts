@@ -3,9 +3,15 @@
 import { neon } from "@neondatabase/serverless";
 import { revalidatePath } from "next/cache";
 
+import { getCurrentInternalUser } from "@/lib/authSession";
 import { invalidateDashboardCache } from "@/lib/dashboardData";
 
 export async function deleteXSignal(id: string): Promise<{ success: boolean; error?: string }> {
+  const user = await getCurrentInternalUser();
+  if (!user) {
+    return { success: false, error: "Unauthorized" };
+  }
+
   const connectionString = process.env.NEON_DATABASE_URL;
   if (!connectionString) {
     return { success: false, error: "Database not configured" };

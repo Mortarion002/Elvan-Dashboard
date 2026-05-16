@@ -1,5 +1,6 @@
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Topbar } from "@/components/layout/Topbar";
+import { requireInternalUser } from "@/lib/authSession";
 import { loadDashboardData } from "@/lib/dashboardData";
 import { getSourceCounts } from "@/lib/sourceViews";
 import styles from "./layout.module.css";
@@ -8,6 +9,7 @@ export const runtime = "nodejs";
 export const maxDuration = 30;
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const user = await requireInternalUser();
   const data = await loadDashboardData();
   const sourceCounts = getSourceCounts(data);
 
@@ -18,7 +20,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         mode={data.statusSummary.mode}
       />
       <div className={styles.main}>
-        <Topbar />
+        <Topbar userEmail={user.email} userName={user.name} />
         {children}
       </div>
     </div>
