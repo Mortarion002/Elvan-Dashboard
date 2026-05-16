@@ -1,18 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import type { FormEvent } from "react";
-import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import {
   Activity,
   ArrowRight,
-  Check,
   Layers,
-  Lock,
-  Mail,
   Target,
-  User,
-  X as XIcon,
   type LucideIcon,
 } from "lucide-react";
 
@@ -45,21 +40,18 @@ const FEATURES: Feature[] = [
 const SOURCES = ["Reddit", "Product Hunt", "Hacker News", "X"];
 
 export function LandingPage() {
-  const [showLogin, setShowLogin] = useState(false);
-
   return (
     <div className={styles.landing} data-theme="dark" id="top">
-      <Nav onSignIn={() => setShowLogin(true)} />
-      <Hero onGetStarted={() => setShowLogin(true)} />
+      <Nav />
+      <Hero />
       <DashboardPreview />
       <Features />
-      <Footer onSignIn={() => setShowLogin(true)} />
-      <LoginModal isOpen={showLogin} onClose={() => setShowLogin(false)} />
+      <Footer />
     </div>
   );
 }
 
-function Nav({ onSignIn }: { onSignIn: () => void }) {
+function Nav() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -96,23 +88,19 @@ function Nav({ onSignIn }: { onSignIn: () => void }) {
           <span className={styles.navWordmark}>Elvan</span>
         </a>
         <div className={styles.navActions}>
-          <button className={`${styles.btnGhost} ${styles.btnSm}`} onClick={onSignIn} type="button">
+          <Link className={`${styles.btnGhost} ${styles.btnSm}`} href="/login">
             Sign In
-          </button>
-          <button
-            className={`${styles.btnPrimary} ${styles.btnSm}`}
-            onClick={onSignIn}
-            type="button"
-          >
+          </Link>
+          <Link className={`${styles.btnPrimary} ${styles.btnSm}`} href="/login">
             Get Started
-          </button>
+          </Link>
         </div>
       </div>
     </nav>
   );
 }
 
-function Hero({ onGetStarted }: { onGetStarted: () => void }) {
+function Hero() {
   return (
     <section className={styles.hero}>
       <div className={styles.heroGlow} />
@@ -131,10 +119,10 @@ function Hero({ onGetStarted }: { onGetStarted: () => void }) {
           Hacker News, and X - all in real time.
         </p>
         <div className={styles.heroActions}>
-          <button className={`${styles.btnPrimary} ${styles.btnLg}`} onClick={onGetStarted} type="button">
+          <Link className={`${styles.btnPrimary} ${styles.btnLg}`} href="/login">
             <span>Get Started</span>
             <ArrowRight size={18} aria-hidden="true" />
-          </button>
+          </Link>
         </div>
         <div className={styles.heroSources}>
           {SOURCES.map((source) => (
@@ -215,232 +203,7 @@ function FeatureCard({ feature, index }: { feature: Feature; index: number }) {
   );
 }
 
-function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
-  const loadingTimer = useRef<number | null>(null);
-
-  function clearLoadingTimer() {
-    if (loadingTimer.current !== null) {
-      window.clearTimeout(loadingTimer.current);
-      loadingTimer.current = null;
-    }
-  }
-
-  useEffect(() => {
-    document.body.style.overflow = isOpen ? "hidden" : "";
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
-
-  useEffect(() => {
-    return () => {
-      clearLoadingTimer();
-    };
-  }, []);
-
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError("");
-
-    if (!email.trim()) {
-      setError("Please enter your email.");
-      return;
-    }
-    if (!password) {
-      setError("Please enter your password.");
-      return;
-    }
-    if (mode === "signup" && !name.trim()) {
-      setError("Please enter your name.");
-      return;
-    }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
-      return;
-    }
-
-    setLoading(true);
-    clearLoadingTimer();
-    loadingTimer.current = window.setTimeout(() => {
-      setLoading(false);
-      setSuccess(true);
-    }, 1500);
-  }
-
-  function switchMode() {
-    clearLoadingTimer();
-    setMode((current) => (current === "signin" ? "signup" : "signin"));
-    setLoading(false);
-    setError("");
-    setSuccess(false);
-  }
-
-  function resetAndClose() {
-    clearLoadingTimer();
-    setEmail("");
-    setPassword("");
-    setName("");
-    setError("");
-    setSuccess(false);
-    setMode("signin");
-    setLoading(false);
-    onClose();
-  }
-
-  return (
-    <div
-      className={`${styles.modalOverlay} ${isOpen ? styles.modalOpen : ""}`}
-      onClick={resetAndClose}
-      aria-hidden={!isOpen}
-    >
-      <div className={styles.modalCard} onClick={(event) => event.stopPropagation()} role="dialog" aria-modal="true">
-        <button className={styles.modalClose} onClick={resetAndClose} type="button" aria-label="Close">
-          <XIcon size={18} aria-hidden="true" />
-        </button>
-
-        <div className={styles.modalHeader}>
-          <div className={styles.modalLogo}>
-            <Image
-              src="/brand/elvan-icon-light.png"
-              alt=""
-              width={36}
-              height={36}
-              className={styles.darkOnly}
-            />
-            <Image
-              src="/brand/elvan-icon-dark.png"
-              alt=""
-              width={36}
-              height={36}
-              className={styles.lightOnly}
-            />
-          </div>
-          <h2 className={styles.modalTitle}>
-            {success ? "You're in!" : mode === "signin" ? "Welcome back" : "Create your account"}
-          </h2>
-          <p className={styles.modalSubtitle}>
-            {success
-              ? "Redirecting to your dashboard..."
-              : mode === "signin"
-                ? "Sign in to your Elvan dashboard"
-                : "Get started with Elvan"}
-          </p>
-        </div>
-
-        {success ? (
-          <div className={styles.successState}>
-            <div className={styles.successIcon}>
-              <Check size={28} strokeWidth={2.5} aria-hidden="true" />
-            </div>
-          </div>
-        ) : (
-          <>
-            <form className={styles.modalForm} onSubmit={handleSubmit}>
-              {mode === "signup" && (
-                <div className={styles.formGroup}>
-                  <label className={styles.formLabel} htmlFor="lg-name">
-                    Name
-                  </label>
-                  <div className={styles.inputWrap}>
-                    <span className={styles.inputIcon}>
-                      <User size={16} strokeWidth={1.5} aria-hidden="true" />
-                    </span>
-                    <input
-                      id="lg-name"
-                      type="text"
-                      className={styles.formInput}
-                      value={name}
-                      onChange={(event) => setName(event.target.value)}
-                      placeholder="Your name"
-                      autoComplete="name"
-                    />
-                  </div>
-                </div>
-              )}
-
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel} htmlFor="lg-email">
-                  Email
-                </label>
-                <div className={styles.inputWrap}>
-                  <span className={styles.inputIcon}>
-                    <Mail size={16} strokeWidth={1.5} aria-hidden="true" />
-                  </span>
-                  <input
-                    id="lg-email"
-                    type="email"
-                    className={styles.formInput}
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    placeholder="you@company.com"
-                    autoComplete="email"
-                  />
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <div className={styles.formLabelRow}>
-                  <label className={styles.formLabel} htmlFor="lg-pass">
-                    Password
-                  </label>
-                  {mode === "signin" && (
-                    <button type="button" className={styles.formLinkBtn}>
-                      Forgot?
-                    </button>
-                  )}
-                </div>
-                <div className={styles.inputWrap}>
-                  <span className={styles.inputIcon}>
-                    <Lock size={16} strokeWidth={1.5} aria-hidden="true" />
-                  </span>
-                  <input
-                    id="lg-pass"
-                    type="password"
-                    className={styles.formInput}
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                    placeholder="Password"
-                    autoComplete={mode === "signin" ? "current-password" : "new-password"}
-                  />
-                </div>
-              </div>
-
-              {error ? <div className={styles.formError}>{error}</div> : null}
-
-              <button type="submit" className={`${styles.btnPrimary} ${styles.btnFull}`} disabled={loading}>
-                {loading ? (
-                  <span className={styles.btnLoading}>
-                    <span className={styles.spinner} />
-                    {mode === "signin" ? "Signing in..." : "Creating account..."}
-                  </span>
-                ) : (
-                  <span>{mode === "signin" ? "Sign In" : "Create Account"}</span>
-                )}
-              </button>
-            </form>
-
-            <div className={styles.modalToggle}>
-              <span>{mode === "signin" ? "Don't have an account?" : "Already have an account?"}</span>
-              <button type="button" className={styles.formLinkBtn} onClick={switchMode}>
-                {mode === "signin" ? "Sign up" : "Sign in"}
-              </button>
-            </div>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function Footer({ onSignIn }: { onSignIn: () => void }) {
+function Footer() {
   return (
     <footer className={styles.footer}>
       <div className={styles.footerInner}>
@@ -465,9 +228,9 @@ function Footer({ onSignIn }: { onSignIn: () => void }) {
           <span className={styles.footerCopy}>&copy; 2026 Elvan</span>
         </div>
         <div className={styles.footerRight}>
-          <button className={styles.footerLink} onClick={onSignIn} type="button">
+          <Link className={styles.footerLink} href="/login">
             Sign In
-          </button>
+          </Link>
           <a className={styles.footerLink} href="https://amankumar002u.tech" target="_blank" rel="noopener noreferrer">
             By Aman Kumar
           </a>
