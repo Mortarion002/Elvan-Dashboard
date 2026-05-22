@@ -6,6 +6,7 @@ export default auth.middleware({
 
 export const config = {
   matcher: [
+    "/auth/callback",
     "/reddit/:path*",
     "/x/:path*",
     "/product-hunt/:path*",
