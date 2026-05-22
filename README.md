@@ -98,6 +98,7 @@ NOTION_WEEKLY_DB_ID=
 ENABLE_LEGACY_NOTION_SIGNALS=false
 NEON_AUTH_BASE_URL=https://ep-autumn-shape-aodsxmjn.neonauth.c-2.ap-southeast-1.aws.neon.tech/neondb/auth
 NEON_AUTH_COOKIE_SECRET=
+NEXT_PUBLIC_APP_URL=https://elvan-dashboard.vercel.app
 AUTH_ALLOWED_DOMAINS=getelvan.com,elvan.com
 ```
 
