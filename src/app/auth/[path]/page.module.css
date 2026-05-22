@@ -1,8 +1,9 @@
 .page {
   min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 32px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 18px;
   background:
     radial-gradient(circle at 50% 0%, rgba(34, 197, 94, 0.08), transparent 34%),
     #050505;
@@ -10,15 +11,17 @@
 }
 
 .panel {
-  width: min(100%, 440px);
+  width: min(100%, 460px);
   display: grid;
-  gap: 22px;
+  justify-items: center;
+  gap: 24px;
 }
 
 .header {
   display: grid;
   gap: 10px;
   text-align: center;
+  justify-items: center;
 }
 
 .badge {
@@ -46,4 +49,60 @@
   color: #aaa39a;
   font-size: 14px;
   line-height: 1.6;
+}
+
+.panel :global([data-slot="card"]) {
+  width: 100%;
+  max-width: none;
+  border-radius: 8px;
+  border-color: #2d2d2d;
+  background: #151515;
+  color: #f8f8f2;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+}
+
+.panel :global([data-slot="card-header"]) {
+  justify-items: center;
+  text-align: center;
+  padding-inline: 28px;
+}
+
+.panel :global([data-slot="card-content"]) {
+  padding-inline: 28px;
+}
+
+.panel :global([data-slot="card-title"]) {
+  width: 100%;
+  color: #f8f8f2;
+}
+
+.panel :global([data-slot="card-description"]) {
+  width: 100%;
+  color: #b8b0a7;
+}
+
+.panel :global(button[data-slot="button"]) {
+  border-color: #3a3a3a;
+  background: #202020;
+  color: #f8f8f2;
+}
+
+.panel :global(button[data-slot="button"]:hover) {
+  background: #272727;
+  color: #f8f8f2;
+}
+
+@media (max-width: 520px) {
+  .page {
+    align-items: flex-start;
+    padding-top: 88px;
+  }
+
+  .panel {
+    width: 100%;
+  }
+
+  .header h1 {
+    font-size: 30px;
+  }
 }
