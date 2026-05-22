@@ -76,6 +76,7 @@ Three independent systems feed into the dashboard:
 - Next.js (App Router)
 - React 19 + TypeScript
 - Neon Postgres (primary signal store via `@neondatabase/serverless`)
+- Neon Auth (company-only dashboard access)
 - Notion API (optional weekly reports and legacy signal archive)
 
 ---
@@ -95,21 +96,20 @@ NOTION_API_KEY=
 NOTION_DB_ID=
 NOTION_WEEKLY_DB_ID=
 ENABLE_LEGACY_NOTION_SIGNALS=false
-AUTH_SECRET=
-AUTH_GOOGLE_ID=
-AUTH_GOOGLE_SECRET=
+NEON_AUTH_BASE_URL=https://ep-autumn-shape-aodsxmjn.neonauth.c-2.ap-southeast-1.aws.neon.tech/neondb/auth
+NEON_AUTH_COOKIE_SECRET=
 AUTH_ALLOWED_DOMAINS=getelvan.com,elvan.com
 ```
 
 `ENABLE_LEGACY_NOTION_SIGNALS` controls whether old Notion-sourced signals are included alongside Neon data. Set to `false` unless you need the archive.
 
-`AUTH_SECRET` can be generated with `npm exec auth secret`. In Google Cloud Console, configure the OAuth redirect URI as:
+`NEON_AUTH_COOKIE_SECRET` must be a random 32+ character secret. Generate one with:
 
-```text
-https://your-domain.com/api/auth/callback/google
+```bash
+openssl rand -base64 32
 ```
 
-Only Google accounts with emails on `getelvan.com` or `elvan.com` are allowed through by default.
+Only accounts with emails on `getelvan.com` or `elvan.com` are allowed through by default.
 
 ---
 

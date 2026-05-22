@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+
+import { NeonAuthProvider } from "@/components/auth/NeonAuthProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -26,7 +28,7 @@ try {
   }
 } catch (_) {}
         `}</Script>
-        {children}
+        <NeonAuthProvider>{children}</NeonAuthProvider>
       </body>
     </html>
   );

@@ -18,12 +18,8 @@ export function isAllowedEmail(email: string | null | undefined): boolean {
   return getAllowedEmailDomains().includes(domain);
 }
 
-export function isGoogleAuthConfigured(): boolean {
-  return Boolean(
-    (process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET) &&
-      process.env.AUTH_GOOGLE_ID &&
-      process.env.AUTH_GOOGLE_SECRET
-  );
+export function isNeonAuthConfigured(): boolean {
+  return Boolean(process.env.NEON_AUTH_BASE_URL && process.env.NEON_AUTH_COOKIE_SECRET);
 }
 
 function extractEmailDomain(email: string | null | undefined): string | null {

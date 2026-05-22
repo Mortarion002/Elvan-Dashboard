@@ -88,10 +88,10 @@ function Nav() {
           <span className={styles.navWordmark}>Elvan</span>
         </a>
         <div className={styles.navActions}>
-          <Link className={`${styles.btnGhost} ${styles.btnSm}`} href="/login">
+          <Link className={`${styles.btnGhost} ${styles.btnSm}`} href="/auth/sign-in">
             Sign In
           </Link>
-          <Link className={`${styles.btnPrimary} ${styles.btnSm}`} href="/login">
+          <Link className={`${styles.btnPrimary} ${styles.btnSm}`} href="/auth/sign-in">
             Get Started
           </Link>
         </div>
@@ -119,7 +119,7 @@ function Hero() {
           Hacker News, and X - all in real time.
         </p>
         <div className={styles.heroActions}>
-          <Link className={`${styles.btnPrimary} ${styles.btnLg}`} href="/login">
+          <Link className={`${styles.btnPrimary} ${styles.btnLg}`} href="/auth/sign-in">
             <span>Get Started</span>
             <ArrowRight size={18} aria-hidden="true" />
           </Link>
@@ -228,7 +228,7 @@ function Footer() {
           <span className={styles.footerCopy}>&copy; 2026 Elvan</span>
         </div>
         <div className={styles.footerRight}>
-          <Link className={styles.footerLink} href="/login">
+          <Link className={styles.footerLink} href="/auth/sign-in">
             Sign In
           </Link>
           <a className={styles.footerLink} href="https://amankumar002u.tech" target="_blank" rel="noopener noreferrer">

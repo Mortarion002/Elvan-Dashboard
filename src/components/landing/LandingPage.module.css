@@ -152,10 +152,13 @@
 .btnGhost {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   border-radius: 8px;
   font-weight: 500;
   letter-spacing: 0;
+  text-decoration: none;
+  white-space: nowrap;
   transition:
     background 0.15s,
     border-color 0.15s,
@@ -163,12 +166,15 @@
 }
 
 .btnPrimary {
+  border: 1px solid var(--btn-bg);
   background: var(--btn-bg);
-  color: var(--btn-text);
+  color: var(--btn-text) !important;
 }
 
 .btnPrimary:hover {
+  border-color: var(--btn-hover);
   background: var(--btn-hover);
+  color: var(--btn-text) !important;
 }
 
 .btnPrimary:active {
@@ -183,7 +189,7 @@
 .btnGhost {
   border: 1px solid var(--ghost-border);
   background: transparent;
-  color: var(--ghost-text);
+  color: var(--ghost-text) !important;
 }
 
 .btnGhost:hover {

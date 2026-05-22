@@ -2,17 +2,9 @@
 
 import { redirect } from "next/navigation";
 
-import { signIn, signOut } from "@/auth";
-import { isGoogleAuthConfigured } from "@/lib/authPolicy";
-
-export async function signInWithGoogle() {
-  if (!isGoogleAuthConfigured()) {
-    redirect("/login?error=Configuration");
-  }
-
-  await signIn("google", { redirectTo: "/reddit" });
-}
+import { auth } from "@/lib/auth/server";
 
 export async function signOutCurrentUser() {
-  await signOut({ redirectTo: "/" });
+  await auth.signOut();
+  redirect("/");
 }
