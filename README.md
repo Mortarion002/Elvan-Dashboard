@@ -128,3 +128,5 @@ Only accounts with emails on `getelvan.com` or `elvan.com` are allowed through b
 
 Aman Kumar
 [amankumar002u.tech](https://amankumar002u.tech)
+
+The landing page footer credits the author with a "Made by Aman Kumar" link and does not include a footer sign-in action.

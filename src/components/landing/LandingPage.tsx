@@ -228,11 +228,8 @@ function Footer() {
           <span className={styles.footerCopy}>&copy; 2026 Elvan</span>
         </div>
         <div className={styles.footerRight}>
-          <Link className={styles.footerLink} href="/auth/sign-in">
-            Sign In
-          </Link>
-          <a className={styles.footerLink} href="https://amankumar002u.tech" target="_blank" rel="noopener noreferrer">
-            By Aman Kumar
+          <a className={styles.footerCredit} href="https://amankumar002u.tech" target="_blank" rel="noopener noreferrer">
+            Made by Aman Kumar
           </a>
         </div>
       </div>

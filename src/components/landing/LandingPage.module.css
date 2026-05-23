@@ -683,8 +683,7 @@
   font-weight: 600;
 }
 
-.footerCopy,
-.footerLink {
+.footerCopy {
   color: var(--text-3);
   font-size: 13px;
   font-weight: 400;
@@ -692,14 +691,30 @@
 
 .footerRight {
   display: flex;
-  gap: 20px;
+  align-items: center;
 }
 
-.footerLink {
-  transition: color 0.15s;
+.footerCredit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    border-color 0.15s,
+    color 0.15s,
+    background 0.15s;
 }
 
-.footerLink:hover {
+.footerCredit:hover {
+  border-color: var(--text-3);
+  background: var(--surface-2);
   color: var(--text-1);
 }
 
