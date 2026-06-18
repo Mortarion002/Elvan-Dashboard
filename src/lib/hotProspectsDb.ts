@@ -22,27 +22,25 @@ export type StoredProspect = {
   savedAt: string;
 };
 
-async function ensureTable(sql: ReturnType<typeof neon>) {
-  await sql`
-    CREATE TABLE IF NOT EXISTS clicked_leads (
-      email                TEXT PRIMARY KEY,
-      full_name            TEXT NOT NULL DEFAULT '',
-      company              TEXT NOT NULL DEFAULT '',
-      phone                TEXT NOT NULL DEFAULT '',
-      website              TEXT NOT NULL DEFAULT '',
-      linkedin             TEXT NOT NULL DEFAULT '',
-      location             TEXT NOT NULL DEFAULT '',
-      status               TEXT NOT NULL DEFAULT '',
-      sequence             TEXT NOT NULL DEFAULT '',
-      total_clicks         INTEGER NOT NULL DEFAULT 0,
-      campaign_count       INTEGER NOT NULL DEFAULT 0,
-      campaign_names_json  TEXT NOT NULL DEFAULT '[]',
-      source_files_json    TEXT NOT NULL DEFAULT '[]',
-      raw_details_json     TEXT NOT NULL DEFAULT '{}',
-      saved_at             TIMESTAMPTZ NOT NULL DEFAULT now()
-    )
-  `;
-}
+const CREATE_TABLE_SQL = `
+  CREATE TABLE IF NOT EXISTS clicked_leads (
+    email                TEXT PRIMARY KEY,
+    full_name            TEXT NOT NULL DEFAULT '',
+    company              TEXT NOT NULL DEFAULT '',
+    phone                TEXT NOT NULL DEFAULT '',
+    website              TEXT NOT NULL DEFAULT '',
+    linkedin             TEXT NOT NULL DEFAULT '',
+    location             TEXT NOT NULL DEFAULT '',
+    status               TEXT NOT NULL DEFAULT '',
+    sequence             TEXT NOT NULL DEFAULT '',
+    total_clicks         INTEGER NOT NULL DEFAULT 0,
+    campaign_count       INTEGER NOT NULL DEFAULT 0,
+    campaign_names_json  TEXT NOT NULL DEFAULT '[]',
+    source_files_json    TEXT NOT NULL DEFAULT '[]',
+    raw_details_json     TEXT NOT NULL DEFAULT '{}',
+    saved_at             TIMESTAMPTZ NOT NULL DEFAULT now()
+  )
+`;
 
 export async function saveProspects(
   leads: ClickedLead[],
@@ -53,7 +51,7 @@ export async function saveProspects(
   }
 
   const sql = neon(connectionString);
-  await ensureTable(sql);
+  await sql.query(CREATE_TABLE_SQL);
 
   const queries = leads.map((lead) =>
     sql`
@@ -88,7 +86,7 @@ export async function saveProspects(
 
 export async function getProspects(connectionString: string): Promise<StoredProspect[]> {
   const sql = neon(connectionString);
-  await ensureTable(sql);
+  await sql.query(CREATE_TABLE_SQL);
 
   const rows = await sql`
     SELECT
@@ -121,7 +119,7 @@ export async function getProspects(connectionString: string): Promise<StoredPros
 
 export async function getProspectsCount(connectionString: string): Promise<number> {
   const sql = neon(connectionString);
-  await ensureTable(sql);
+  await sql.query(CREATE_TABLE_SQL);
 
   const result = await sql`SELECT COUNT(*) AS count FROM clicked_leads`;
   return Number((result[0] as { count: string }).count ?? 0);
@@ -129,7 +127,7 @@ export async function getProspectsCount(connectionString: string): Promise<numbe
 
 export async function deleteProspect(email: string, connectionString: string): Promise<void> {
   const sql = neon(connectionString);
-  await ensureTable(sql);
+  await sql.query(CREATE_TABLE_SQL);
 
   await sql`DELETE FROM clicked_leads WHERE email = ${email}`;
 }
