@@ -48,8 +48,16 @@
   line-height: 1.6;
 }
 
+.heroActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .primaryButton,
-.downloadButton {
+.downloadButton,
+.saveButton {
   min-height: 42px;
   display: inline-flex;
   align-items: center;
@@ -65,9 +73,37 @@
   white-space: nowrap;
 }
 
-.downloadButton:disabled {
+.saveButton {
+  background: color-mix(in srgb, var(--success, #22c55e) 18%, var(--surface));
+  color: var(--success, #22c55e);
+  border-color: color-mix(in srgb, var(--success, #22c55e) 36%, var(--border));
+}
+
+.downloadButton:disabled,
+.saveButton:disabled {
   cursor: not-allowed;
   opacity: 0.48;
+}
+
+.successPanel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 18px;
+  border: 1px solid color-mix(in srgb, var(--success, #22c55e) 34%, var(--border));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--success, #22c55e) 10%, var(--surface));
+  color: var(--text);
+}
+
+.successPanel svg {
+  flex: 0 0 auto;
+  color: var(--success, #22c55e);
+}
+
+.successPanel span {
+  color: var(--muted);
+  line-height: 1.5;
 }
 
 .fileInput {

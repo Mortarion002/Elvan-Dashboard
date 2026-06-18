@@ -1,11 +1,13 @@
 "use client";
 
-import { useMemo, useRef, useState, type ChangeEvent, type CSSProperties, type ReactNode } from "react";
+import { useMemo, useRef, useState, useTransition, type ChangeEvent, type CSSProperties, type ReactNode } from "react";
 import Papa from "papaparse";
 import {
   AlertTriangle,
+  CheckCircle,
   Download,
   FileSpreadsheet,
+  Flame,
   MousePointerClick,
   Search,
   Trash2,
@@ -23,6 +25,7 @@ import {
   type CampaignUpload,
   type ClickedLead,
 } from "@/lib/campaignClicks";
+import { saveHotProspects } from "@/app/actions";
 import styles from "./CampaignClicksPage.module.css";
 
 type SortMode = "clicks" | "campaigns" | "name";
@@ -34,6 +37,8 @@ export function CampaignClicksPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortMode, setSortMode] = useState<SortMode>("clicks");
+  const [saveResult, setSaveResult] = useState<{ saved: number; skipped: number } | null>(null);
+  const [isSaving, startSaveTransition] = useTransition();
 
   const summary = useMemo(() => summarizeCampaignClicks(uploads), [uploads]);
   const filteredLeads = useMemo(() => {
@@ -115,6 +120,22 @@ export function CampaignClicksPage() {
     URL.revokeObjectURL(url);
   }
 
+  function handleSaveToHotProspects() {
+    if (!summary.leads.length) {
+      return;
+    }
+
+    setSaveResult(null);
+    startSaveTransition(async () => {
+      const result = await saveHotProspects(summary.leads);
+      if (result.success) {
+        setSaveResult({ saved: result.saved ?? 0, skipped: result.skipped ?? 0 });
+      } else {
+        setError(result.error ?? "Failed to save to Hot Prospects.");
+      }
+    });
+  }
+
   const hasUploads = uploads.length > 0;
   const hasClickColumns = summary.filesWithClickColumns > 0;
 
@@ -131,19 +152,30 @@ export function CampaignClicksPage() {
           <p>Upload completed Smartlead campaign exports and isolate leads with click activity.</p>
         </div>
 
-        <label className={styles.primaryButton}>
-          <Upload size={17} aria-hidden="true" />
-          <span>{isParsing ? "Parsing..." : "Add CSV"}</span>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".csv,text/csv"
-            multiple
-            className={styles.fileInput}
-            onChange={handleFileChange}
-            disabled={isParsing}
-          />
-        </label>
+        <div className={styles.heroActions}>
+          <label className={styles.primaryButton}>
+            <Upload size={17} aria-hidden="true" />
+            <span>{isParsing ? "Parsing..." : "Add CSV"}</span>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".csv,text/csv"
+              multiple
+              className={styles.fileInput}
+              onChange={handleFileChange}
+              disabled={isParsing}
+            />
+          </label>
+          <button
+            type="button"
+            className={styles.saveButton}
+            onClick={handleSaveToHotProspects}
+            disabled={!summary.leads.length || isSaving}
+          >
+            <Flame size={17} aria-hidden="true" />
+            <span>{isSaving ? "Saving..." : "Save to Hot Prospects"}</span>
+          </button>
+        </div>
       </section>
 
       <section className={styles.metrics} aria-label="Campaign click summary">
@@ -157,6 +189,19 @@ export function CampaignClicksPage() {
         <section className={styles.warningPanel}>
           <AlertTriangle size={18} aria-hidden="true" />
           <span>{error}</span>
+        </section>
+      ) : null}
+
+      {saveResult ? (
+        <section className={styles.successPanel}>
+          <CheckCircle size={18} aria-hidden="true" />
+          <span>
+            {saveResult.saved === 0
+              ? `All ${saveResult.skipped} leads already saved — nothing new added.`
+              : saveResult.skipped === 0
+                ? `${saveResult.saved} lead${saveResult.saved === 1 ? "" : "s"} saved to Hot Prospects.`
+                : `${saveResult.saved} lead${saveResult.saved === 1 ? "" : "s"} saved to Hot Prospects — ${saveResult.skipped} already existed and were skipped.`}
+          </span>
         </section>
       ) : null}
 
