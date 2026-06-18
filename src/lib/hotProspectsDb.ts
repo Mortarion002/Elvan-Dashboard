@@ -18,8 +18,6 @@ const CREATE_TABLE_SQL = `
   )
 `;
 
-const BATCH_SIZE = 50;
-
 export async function saveProspects(
   leads: ProspectInput[],
   connectionString: string
@@ -31,22 +29,15 @@ export async function saveProspects(
   const sql = neon(connectionString);
   await sql.query(CREATE_TABLE_SQL);
 
-  let saved = 0;
+  const values = leads.map((_, i) => `($${i * 2 + 1},$${i * 2 + 2})`).join(",");
+  const params: string[] = leads.flatMap((l) => [l.email, l.fullName]);
 
-  for (let i = 0; i < leads.length; i += BATCH_SIZE) {
-    const batch = leads.slice(i, i + BATCH_SIZE);
-    const queries = batch.map(
-      (lead) => sql`
-        INSERT INTO clicked_leads (email, full_name)
-        VALUES (${lead.email}, ${lead.fullName})
-        ON CONFLICT (email) DO NOTHING
-        RETURNING email
-      `
-    );
-    const results = await sql.transaction(queries);
-    saved += results.filter((r) => (r as unknown[]).length > 0).length;
-  }
+  const result = await sql.query(
+    `INSERT INTO clicked_leads (email, full_name) VALUES ${values} ON CONFLICT (email) DO NOTHING RETURNING email`,
+    params
+  );
 
+  const saved = (result as unknown[]).length;
   return { saved, skipped: leads.length - saved };
 }
 

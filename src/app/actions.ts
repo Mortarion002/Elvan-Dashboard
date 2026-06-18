@@ -5,8 +5,7 @@ import { revalidatePath } from "next/cache";
 
 import { getCurrentInternalUser } from "@/lib/authSession";
 import { invalidateDashboardCache } from "@/lib/dashboardData";
-import { saveProspects, deleteProspect } from "@/lib/hotProspectsDb";
-import type { ProspectInput } from "@/lib/campaignClicks";
+import { deleteProspect } from "@/lib/hotProspectsDb";
 
 export async function deleteXSignal(id: string): Promise<{ success: boolean; error?: string }> {
   const user = await getCurrentInternalUser();
@@ -40,29 +39,6 @@ export async function deleteXSignal(id: string): Promise<{ success: boolean; err
   } catch (error) {
     console.error("Failed to delete X signal", error);
     return { success: false, error: "Delete failed" };
-  }
-}
-
-export async function saveHotProspects(
-  leads: ProspectInput[]
-): Promise<{ success: boolean; saved?: number; skipped?: number; error?: string }> {
-  const user = await getCurrentInternalUser();
-  if (!user) {
-    return { success: false, error: "Unauthorized" };
-  }
-
-  const connectionString = process.env.NEON_DATABASE_URL;
-  if (!connectionString) {
-    return { success: false, error: "Database not configured" };
-  }
-
-  try {
-    const result = await saveProspects(leads, connectionString);
-    return { success: true, saved: result.saved, skipped: result.skipped };
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error("Failed to save hot prospects", error);
-    return { success: false, error: `DB error: ${message}` };
   }
 }
 

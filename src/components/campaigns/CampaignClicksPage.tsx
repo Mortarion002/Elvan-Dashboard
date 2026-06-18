@@ -26,7 +26,6 @@ import {
   type ClickedLead,
   type ProspectInput,
 } from "@/lib/campaignClicks";
-import { saveHotProspects } from "@/app/actions";
 import styles from "./CampaignClicksPage.module.css";
 
 type SortMode = "clicks" | "campaigns" | "name";
@@ -134,7 +133,17 @@ export function CampaignClicksPage() {
           email: lead.email,
           fullName: lead.fullName,
         }));
-        const result = await saveHotProspects(leadsToSave);
+        const response = await fetch("/api/save-prospects", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(leadsToSave),
+        });
+        const result = (await response.json()) as {
+          success: boolean;
+          saved?: number;
+          skipped?: number;
+          error?: string;
+        };
         if (result.success) {
           setSaveResult({ saved: result.saved ?? 0, skipped: result.skipped ?? 0 });
         } else {
