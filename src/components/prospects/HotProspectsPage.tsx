@@ -4,7 +4,6 @@ import { useMemo, useState, useTransition, type CSSProperties, type ReactNode } 
 import Papa from "papaparse";
 import {
   Download,
-  Flame,
   Search,
   Trash2,
   Users,
@@ -14,7 +13,7 @@ import { deleteHotProspect } from "@/app/actions";
 import type { StoredProspect } from "@/lib/hotProspectsDb";
 import styles from "./HotProspectsPage.module.css";
 
-type SortMode = "saved" | "clicks" | "name";
+type SortMode = "saved" | "name";
 
 export function HotProspectsPage({ prospects: initialProspects }: { prospects: StoredProspect[] }) {
   const [prospects, setProspects] = useState(initialProspects);
@@ -27,15 +26,11 @@ export function HotProspectsPage({ prospects: initialProspects }: { prospects: S
     const query = searchTerm.trim().toLowerCase();
     const visible = query
       ? prospects.filter((p) =>
-          [p.fullName, p.email, p.company, p.website, p.linkedin, p.campaignNames.join(" ")]
-            .join(" ")
-            .toLowerCase()
-            .includes(query)
+          [p.fullName, p.email].join(" ").toLowerCase().includes(query)
         )
       : prospects;
 
     return [...visible].sort((a, b) => {
-      if (sortMode === "clicks") return b.totalClicks - a.totalClicks || a.email.localeCompare(b.email);
       if (sortMode === "name") return displayName(a).localeCompare(displayName(b));
       return new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime();
     });
@@ -53,19 +48,10 @@ export function HotProspectsPage({ prospects: initialProspects }: { prospects: S
   function downloadCsv() {
     if (!prospects.length) return;
 
-    const headers = ["Lead Name", "Email", "Company Name", "Phone", "Website", "LinkedIn", "Location", "Status", "Sequence", "Total Clicks", "Campaigns", "Saved At"];
+    const headers = ["Lead Name", "Email", "Saved At"];
     const rows = prospects.map((p) => ({
       "Lead Name": p.fullName,
       Email: p.email,
-      "Company Name": p.company,
-      Phone: p.phone,
-      Website: p.website,
-      LinkedIn: p.linkedin,
-      Location: p.location,
-      Status: p.status,
-      Sequence: p.sequence,
-      "Total Clicks": p.totalClicks,
-      Campaigns: p.campaignNames.join("; "),
       "Saved At": formatDate(p.savedAt),
     }));
     const csv = Papa.unparse(rows, { columns: headers, newline: "\r\n" });
@@ -107,16 +93,6 @@ export function HotProspectsPage({ prospects: initialProspects }: { prospects: S
       <section className={styles.metrics} aria-label="Hot prospects summary">
         <MetricCard icon={<Users />} label="Total prospects" value={prospects.length} />
         <MetricCard
-          icon={<Flame />}
-          label="Total clicks"
-          value={prospects.reduce((sum, p) => sum + p.totalClicks, 0)}
-        />
-        <MetricCard
-          icon={<Flame />}
-          label="Campaigns covered"
-          value={new Set(prospects.flatMap((p) => p.campaignNames)).size}
-        />
-        <MetricCard
           icon={<Users />}
           label="Showing"
           value={`${filtered.length} / ${prospects.length}`}
@@ -142,7 +118,7 @@ export function HotProspectsPage({ prospects: initialProspects }: { prospects: S
               type="search"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by name, email, company, campaign…"
+              placeholder="Search by name or email…"
             />
           </label>
           <select
@@ -151,7 +127,6 @@ export function HotProspectsPage({ prospects: initialProspects }: { prospects: S
             aria-label="Sort prospects"
           >
             <option value="saved">Recently saved</option>
-            <option value="clicks">Most clicks</option>
             <option value="name">Name (A–Z)</option>
           </select>
         </div>
@@ -162,12 +137,6 @@ export function HotProspectsPage({ prospects: initialProspects }: { prospects: S
               <thead>
                 <tr>
                   <th>Lead</th>
-                  <th>Company</th>
-                  <th>Contact</th>
-                  <th>Clicks</th>
-                  <th>Campaigns</th>
-                  <th>Sequence</th>
-                  <th>Links</th>
                   <th>Saved</th>
                   <th></th>
                 </tr>
@@ -186,7 +155,7 @@ export function HotProspectsPage({ prospects: initialProspects }: { prospects: S
           </div>
         ) : (
           <div className={styles.emptyState}>
-            <Flame size={28} aria-hidden="true" />
+            <Users size={28} aria-hidden="true" />
             <strong>
               {prospects.length === 0
                 ? "No hot prospects yet."
@@ -216,37 +185,6 @@ function ProspectRow({
       <td>
         <strong>{displayName(prospect)}</strong>
         <span>{prospect.email}</span>
-      </td>
-      <td>
-        <strong>{prospect.company || "-"}</strong>
-        <span>{prospect.location || ""}</span>
-      </td>
-      <td>
-        <span>{prospect.phone || "-"}</span>
-      </td>
-      <td>
-        <b>{prospect.totalClicks}</b>
-      </td>
-      <td>
-        <span>{prospect.campaignNames.join("; ") || "-"}</span>
-      </td>
-      <td>
-        <span>{prospect.sequence || "-"}</span>
-      </td>
-      <td>
-        <div className={styles.linkGroup}>
-          {prospect.website ? (
-            <a href={normalizeHref(prospect.website)} target="_blank" rel="noreferrer">
-              Website
-            </a>
-          ) : null}
-          {prospect.linkedin ? (
-            <a href={normalizeHref(prospect.linkedin)} target="_blank" rel="noreferrer">
-              LinkedIn
-            </a>
-          ) : null}
-          {!prospect.website && !prospect.linkedin ? <span>-</span> : null}
-        </div>
       </td>
       <td>
         <span>{formatDate(prospect.savedAt)}</span>
@@ -281,10 +219,6 @@ function MetricCard({ icon, label, value }: { icon: ReactNode; label: string; va
 
 function displayName(prospect: StoredProspect): string {
   return prospect.fullName || prospect.email;
-}
-
-function normalizeHref(value: string): string {
-  return /^https?:\/\//i.test(value) ? value : `https://${value}`;
 }
 
 function formatDate(iso: string): string {

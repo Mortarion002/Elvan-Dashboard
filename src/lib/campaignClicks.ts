@@ -35,17 +35,6 @@ export type ClickedLead = {
 export type ProspectInput = {
   email: string;
   fullName: string;
-  company: string;
-  phone: string;
-  website: string;
-  linkedIn: string;
-  location: string;
-  status: string;
-  sequence: string;
-  totalClicks: number;
-  campaignCount: number;
-  campaignNames: string[];
-  sourceFiles: string[];
 };
 
 export type CampaignClickSummary = {

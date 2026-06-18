@@ -133,17 +133,6 @@ export function CampaignClicksPage() {
         const leadsToSave: ProspectInput[] = summary.leads.map((lead) => ({
           email: lead.email,
           fullName: lead.fullName,
-          company: lead.company,
-          phone: lead.phone,
-          website: lead.website,
-          linkedIn: lead.linkedIn,
-          location: lead.location,
-          status: lead.status,
-          sequence: lead.sequence,
-          totalClicks: lead.totalClicks,
-          campaignCount: lead.campaignCount,
-          campaignNames: lead.campaignNames,
-          sourceFiles: lead.sourceFiles,
         }));
         const result = await saveHotProspects(leadsToSave);
         if (result.success) {

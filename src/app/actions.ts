@@ -58,7 +58,6 @@ export async function saveHotProspects(
 
   try {
     const result = await saveProspects(leads, connectionString);
-    revalidatePath("/hot-prospects");
     return { success: true, saved: result.saved, skipped: result.skipped };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
