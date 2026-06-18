@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
+  Flame,
   Hash,
   MessageCircle,
   MousePointerClick,
@@ -22,6 +23,7 @@ import styles from "./Sidebar.module.css";
 type SidebarProps = {
   sourceCounts: Record<SignalSource, number>;
   mode: DashboardMode;
+  hotProspectsCount: number;
 };
 
 const iconMap = {
@@ -31,7 +33,7 @@ const iconMap = {
   hn: RadioTower,
 };
 
-export function Sidebar({ sourceCounts, mode }: SidebarProps) {
+export function Sidebar({ sourceCounts, mode, hotProspectsCount }: SidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -104,6 +106,14 @@ export function Sidebar({ sourceCounts, mode }: SidebarProps) {
           <MousePointerClick size={18} aria-hidden="true" />
           <span>Campaign Clicks</span>
           <strong>CSV</strong>
+        </Link>
+        <Link
+          href="/hot-prospects"
+          className={`${styles.navItem} ${pathname === "/hot-prospects" ? styles.active : ""}`}
+        >
+          <Flame size={18} aria-hidden="true" />
+          <span>Hot Prospects</span>
+          <strong>{formatBadge(hotProspectsCount)}</strong>
         </Link>
       </nav>
 
