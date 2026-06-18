@@ -24,6 +24,7 @@ import {
   type CampaignCsvRow,
   type CampaignUpload,
   type ClickedLead,
+  type ProspectInput,
 } from "@/lib/campaignClicks";
 import { saveHotProspects } from "@/app/actions";
 import styles from "./CampaignClicksPage.module.css";
@@ -129,7 +130,22 @@ export function CampaignClicksPage() {
     setError(null);
     startSaveTransition(async () => {
       try {
-        const result = await saveHotProspects(summary.leads);
+        const leadsToSave: ProspectInput[] = summary.leads.map((lead) => ({
+          email: lead.email,
+          fullName: lead.fullName,
+          company: lead.company,
+          phone: lead.phone,
+          website: lead.website,
+          linkedIn: lead.linkedIn,
+          location: lead.location,
+          status: lead.status,
+          sequence: lead.sequence,
+          totalClicks: lead.totalClicks,
+          campaignCount: lead.campaignCount,
+          campaignNames: lead.campaignNames,
+          sourceFiles: lead.sourceFiles,
+        }));
+        const result = await saveHotProspects(leadsToSave);
         if (result.success) {
           setSaveResult({ saved: result.saved ?? 0, skipped: result.skipped ?? 0 });
         } else {

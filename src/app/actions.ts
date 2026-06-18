@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { getCurrentInternalUser } from "@/lib/authSession";
 import { invalidateDashboardCache } from "@/lib/dashboardData";
 import { saveProspects, deleteProspect } from "@/lib/hotProspectsDb";
-import type { ClickedLead } from "@/lib/campaignClicks";
+import type { ProspectInput } from "@/lib/campaignClicks";
 
 export async function deleteXSignal(id: string): Promise<{ success: boolean; error?: string }> {
   const user = await getCurrentInternalUser();
@@ -44,7 +44,7 @@ export async function deleteXSignal(id: string): Promise<{ success: boolean; err
 }
 
 export async function saveHotProspects(
-  leads: ClickedLead[]
+  leads: ProspectInput[]
 ): Promise<{ success: boolean; saved?: number; skipped?: number; error?: string }> {
   const user = await getCurrentInternalUser();
   if (!user) {

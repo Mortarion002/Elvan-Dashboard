@@ -2,7 +2,7 @@ import "server-only";
 
 import { neon } from "@neondatabase/serverless";
 
-import type { ClickedLead } from "@/lib/campaignClicks";
+import type { ProspectInput } from "@/lib/campaignClicks";
 
 export type StoredProspect = {
   email: string;
@@ -43,7 +43,7 @@ const CREATE_TABLE_SQL = `
 `;
 
 export async function saveProspects(
-  leads: ClickedLead[],
+  leads: ProspectInput[],
   connectionString: string
 ): Promise<{ saved: number; skipped: number }> {
   if (!leads.length) {
@@ -58,7 +58,7 @@ export async function saveProspects(
       INSERT INTO clicked_leads (
         email, full_name, company, phone, website, linkedin, location,
         status, sequence, total_clicks, campaign_count,
-        campaign_names_json, source_files_json, raw_details_json
+        campaign_names_json, source_files_json
       ) VALUES (
         ${lead.email},
         ${lead.fullName},
@@ -72,8 +72,7 @@ export async function saveProspects(
         ${lead.totalClicks},
         ${lead.campaignCount},
         ${JSON.stringify(lead.campaignNames)},
-        ${JSON.stringify(lead.sourceFiles)},
-        ${JSON.stringify(lead.details)}
+        ${JSON.stringify(lead.sourceFiles)}
       ) ON CONFLICT (email) DO NOTHING
       RETURNING email
     `
