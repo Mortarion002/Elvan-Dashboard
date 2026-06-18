@@ -151,8 +151,9 @@ export function CampaignClicksPage() {
         } else {
           setError(result.error ?? "Failed to save to Hot Prospects.");
         }
-      } catch {
-        setError("Could not save to Hot Prospects — the payload may be too large or the server is unavailable. Try uploading fewer CSVs at once.");
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        setError(`Save failed: ${msg}`);
       }
     });
   }

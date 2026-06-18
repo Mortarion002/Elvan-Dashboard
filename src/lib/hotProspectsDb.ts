@@ -53,33 +53,48 @@ export async function saveProspects(
   const sql = neon(connectionString);
   await sql.query(CREATE_TABLE_SQL);
 
-  const queries = leads.map((lead) =>
-    sql`
-      INSERT INTO clicked_leads (
-        email, full_name, company, phone, website, linkedin, location,
-        status, sequence, total_clicks, campaign_count,
-        campaign_names_json, source_files_json
-      ) VALUES (
-        ${lead.email},
-        ${lead.fullName},
-        ${lead.company},
-        ${lead.phone},
-        ${lead.website},
-        ${lead.linkedIn},
-        ${lead.location},
-        ${lead.status},
-        ${lead.sequence},
-        ${lead.totalClicks},
-        ${lead.campaignCount},
-        ${JSON.stringify(lead.campaignNames)},
-        ${JSON.stringify(lead.sourceFiles)}
-      ) ON CONFLICT (email) DO NOTHING
-      RETURNING email
-    `
-  );
+  const rows = leads.map((lead) => ({
+    email: lead.email,
+    full_name: lead.fullName,
+    company: lead.company,
+    phone: lead.phone,
+    website: lead.website,
+    linkedin: lead.linkedIn,
+    location: lead.location,
+    status: lead.status,
+    sequence: lead.sequence,
+    total_clicks: lead.totalClicks,
+    campaign_count: lead.campaignCount,
+    campaign_names_json: JSON.stringify(lead.campaignNames),
+    source_files_json: JSON.stringify(lead.sourceFiles),
+  }));
 
-  const results = await sql.transaction(queries);
-  const saved = results.filter((r) => (r as unknown[]).length > 0).length;
+  const result = await sql`
+    INSERT INTO clicked_leads (
+      email, full_name, company, phone, website, linkedin, location,
+      status, sequence, total_clicks, campaign_count,
+      campaign_names_json, source_files_json
+    )
+    SELECT
+      d->>'email',
+      d->>'full_name',
+      d->>'company',
+      d->>'phone',
+      d->>'website',
+      d->>'linkedin',
+      d->>'location',
+      d->>'status',
+      d->>'sequence',
+      (d->>'total_clicks')::integer,
+      (d->>'campaign_count')::integer,
+      d->>'campaign_names_json',
+      d->>'source_files_json'
+    FROM json_array_elements(${JSON.stringify(rows)}::json) AS d
+    ON CONFLICT (email) DO NOTHING
+    RETURNING email
+  `;
+
+  const saved = (result as unknown[]).length;
   return { saved, skipped: leads.length - saved };
 }
 

@@ -61,8 +61,9 @@ export async function saveHotProspects(
     revalidatePath("/hot-prospects");
     return { success: true, saved: result.saved, skipped: result.skipped };
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
     console.error("Failed to save hot prospects", error);
-    return { success: false, error: "Save failed" };
+    return { success: false, error: `DB error: ${message}` };
   }
 }
 
