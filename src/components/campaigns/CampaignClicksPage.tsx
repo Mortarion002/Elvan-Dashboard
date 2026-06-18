@@ -126,12 +126,17 @@ export function CampaignClicksPage() {
     }
 
     setSaveResult(null);
+    setError(null);
     startSaveTransition(async () => {
-      const result = await saveHotProspects(summary.leads);
-      if (result.success) {
-        setSaveResult({ saved: result.saved ?? 0, skipped: result.skipped ?? 0 });
-      } else {
-        setError(result.error ?? "Failed to save to Hot Prospects.");
+      try {
+        const result = await saveHotProspects(summary.leads);
+        if (result.success) {
+          setSaveResult({ saved: result.saved ?? 0, skipped: result.skipped ?? 0 });
+        } else {
+          setError(result.error ?? "Failed to save to Hot Prospects.");
+        }
+      } catch {
+        setError("Could not save to Hot Prospects — the payload may be too large or the server is unavailable. Try uploading fewer CSVs at once.");
       }
     });
   }
